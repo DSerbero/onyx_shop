@@ -1,0 +1,102 @@
+form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+table h1 {
+    border: none;
+}
+
+table {
+    border: 3px solid transparent;
+}
+
+table * {
+    padding: 8px;
+    border: 3px solid #fff;
+}
+
+table th {
+    background: var(--td_tab1);
+    min-width: 130px;
+}
+
+table label {
+    border: none;
+}
+
+table td {
+    background: var(--td_tab2);
+    display: flex;
+    justify-content: end;
+}
+
+table input[type="text"],
+table input[type="number"] {
+    border: none;
+    background: transparent;
+    text-align: end;
+}
+
+table select {
+    width: 100%;
+    background: var(--td_tab2);
+    border: none;
+}
+
+select,
+::picker(select) {
+    appearance: base-select;
+}
+
+select::picker-icon {
+    color: #999999;
+    transition: 0.4s rotate;
+}
+
+select:open::picker-icon {
+    rotate: 180deg;
+}
+
+::picker(select) {
+    border: none;
+}
+
+option {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+
+    border: 2px solid var(--td_tab1);
+    background: var(--td_tab2);
+    padding: 10px;
+    transition: 0.4s;
+}
+
+option:hover,
+option:focus {
+    background: var(--th_tab);
+}
+
+option:checked {
+    font-weight: bold;
+}
+
+
+input[type="submit"] {
+    width: 200px;
+    height: 40px;
+    font-weight: bolder;
+    font-size: 1em;
+    background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
+    border: none;
+    border-radius: 12px;
+}
+
+input[type="submit"]:hover {
+    background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
+}

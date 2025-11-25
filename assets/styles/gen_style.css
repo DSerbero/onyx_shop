@@ -1,0 +1,61 @@
+:root {
+    --deg1: #5de0e6;
+    --deg2: #004aad;
+    --font: 'Helvetica';
+    --deg_btn1: #b290f1;
+    --deg_btn2: #aedcf3;
+    --deg_btn_h1: #b3d6f2;
+    --deg_btn_h2: #98bcd9;
+    --bgtab: #e5f4ff;
+    --th_tab: #99acff;
+    --td_tab1: #cdd6ff;
+    --td_tab2: #e3e8ff;
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: var(--font);
+}
+
+
+body {
+    display: grid;
+    grid-template:
+        "header" 15vh
+        "title" 10vh
+        "section" 75vh
+    ;
+}
+
+.titulo {
+    grid-area: title;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+header {
+    grid-area: header;
+    background: linear-gradient(to right, var(--deg1), var(--deg2));
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    user-select: none;
+}
+
+
+
+.header_s1 {}
+
+
+.header_s2 img {
+    width: 17vh;
+}
+
+.header_s3 {}
+
+

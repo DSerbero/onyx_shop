@@ -1,0 +1,7 @@
+RewriteEngine On
+
+RewriteRule ^inicio$ index.php
+RewriteRule ^login views/auth/login.php
+RewriteRule ^venta views/ventas/crear_venta.php
+RewriteRule ^agregar views/inventario/agregar_productos.php
+RewriteRule ^cliente views/cliente/agregar_cliente.php

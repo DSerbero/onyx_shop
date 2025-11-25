@@ -1,0 +1,418 @@
+.form_compra {
+    height: 100%;
+    width: 100%;
+}
+
+.sec_1 {
+    grid-area: sec1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lista {
+    position: absolute;
+    background: #fff;
+    width: 250px;
+    z-index: 20;
+    max-height: 100px;
+    overflow-y: scroll;
+    margin-top: 65px;
+    margin-left: 8px;
+}
+
+.lista div {
+    padding: 6px;
+    cursor: pointer;
+}
+
+.lista div:hover {
+    background: #eee;
+}
+
+
+.cont_compra {
+    background: var(--bgtab);
+    padding: 20px;
+    border: 2px solid black;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cont_compra>h2 {
+    margin-left: 8px;
+    margin-bottom: 10px;
+}
+
+.buscar {
+    background: linear-gradient(to right, var(--deg_btn2), var(--deg_btn1));
+    width: 240px;
+    margin-left: 8px;
+    height: 25px;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+}
+
+.tabla_scroll {
+    max-height: 400px;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: var(--th_tab) var(--bgtab);
+}
+
+.cont_compra table,
+.cont_compra table * {
+    border: 3px solid var(--bgtab);
+}
+
+.cont_compra table {
+    max-height: 400px;
+}
+
+.cont_compra table * {
+    padding: 8px;
+}
+
+.cont_compra table th {
+    background: var(--th_tab);
+    min-width: 130px;
+}
+
+
+.cont_compra table td {
+    background: var(--td_tab2);
+}
+
+.cont_compra table .code {
+    background: var(--td_tab1);
+}
+
+
+.cont_compra table img {
+    border: none;
+    height: 20px;
+    padding: 0px;
+}
+
+.cont_compra table a {
+    border: none;
+
+}
+
+.cont_compra table input[type="text"],
+.cont_compra table input[type="number"] {
+    border: none;
+    background: transparent;
+    text-align: end;
+}
+
+.sec_2 {
+    grid-area: sec2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cont_cli {
+    background: var(--bgtab);
+    padding: 20px;
+    border: 2px solid black;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cont_cli>h2 {
+    margin-left: 8px;
+    margin-bottom: 10px;
+}
+
+.cliente {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.cliente>button {
+    display: flex;
+    border: none;
+    background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+}
+
+.cliente>button>img {
+    border-radius: 5px;
+    width: 100%;
+}
+
+
+.modal_cliente {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal_contenido table h2 {
+    border: none;
+}
+
+.modal_contenido table th.title {
+    background: var(--th_tab);
+}
+
+.modal_contenido {
+    background: var(--bgtab);
+    width: 380px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.modal_contenido table {
+    border: 3px solid var(--bgtab);
+}
+
+.modal_contenido table * {
+    padding: 8px;
+    border: 3px solid var(--bgtab);
+}
+
+.modal_contenido table th {
+    background: var(--td_tab1);
+    min-width: 130px;
+}
+
+.modal_contenido table label {
+    border: none;
+}
+
+.modal_contenido table td {
+    background: var(--td_tab2);
+    display: flex;
+    justify-content: end;
+}
+
+.modal_contenido h2 {
+    margin-bottom: 10px;
+}
+
+.modal_contenido input {
+    padding: 8px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: end;
+}
+
+.btn_cerrar {
+    margin-top: 10px;
+    padding: 10px;
+    background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn_cerrar:hover {
+    background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
+
+}
+
+.metodo_pag {}
+
+.btn_m {
+    position: relative;
+    width: 80px;
+    height: 24px;
+    margin: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn_m::before {
+    content: attr(data-label);
+    position: absolute;
+    margin-left: -40px;
+    width: 80px;
+    padding: 5px;
+    border-radius: 8px;
+    background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
+
+}
+
+.btn_m:checked::before {
+    position: absolute;
+    margin-left: -40px;
+    width: 80px;
+    padding: 5px;
+    border-radius: 8px;
+    background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
+}
+
+
+.sec_3 {
+    grid-area: sec3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.sec_3>input[type="submit"] {
+    width: 40%;
+    height: 40px;
+    font-weight: bolder;
+    font-size: 1em;
+    background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
+    border: none;
+    border-radius: 12px;
+}
+
+
+.sec_3>input[type="submit"]:hover {
+    background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
+}
+
+
+@media (min-width:1440px) {
+    section .form_compra {
+        grid-area: section;
+        display: grid;
+        grid-template:
+            "sec1 sec1" 60%
+            "sec2 sec3" 40%/
+            60% 40%
+        ;
+    }
+
+    .cont_compra {
+        height: 85%;
+    }
+
+}
+
+/* Tablets y Ipad's */
+
+@media (min-width:768px) and (max-width: 1023px) and (orientation: portrait) {
+
+    /*Vertical*/
+    section .form_compra {
+        grid-area: section;
+        display: grid;
+        grid-template:
+            "sec1 sec1" 60%
+            "sec2 sec3" 40%/
+            60% 40%
+        ;
+    }
+
+    .cont_compra {
+        height: 85%;
+    }
+
+}
+
+@media (min-width: 1023px) and (max-width: 1439px) and (orientation: landscape) {
+
+    /*Horizontal*/
+    section .form_compra {
+        grid-area: section;
+        display: grid;
+        grid-template:
+            "sec1 sec1" 60%
+            "sec2 sec3" 40%/
+            60% 40%
+        ;
+
+    }
+
+    .sec_1,
+    .sec_2 {
+        scale: .8;
+    }
+
+    footer {
+        display: none;
+    }
+
+    .cont_compra {
+        height: 85%;
+    }
+
+}
+
+/* Celulares */
+
+@media (max-width: 767px) and (orientation: portrait) {
+
+    /*Vertical*/
+    section .form_compra {
+        grid-area: section;
+        display: grid;
+        grid-template:
+            "sec1" 50vh
+            "sec2" 20vh
+            "sec3" 10vh/
+            100%
+        ;
+    }
+
+    .sec_1,
+    .sec_2,
+    .sec_3 {
+        scale: 0.8;
+    }
+
+    footer {
+        display: none;
+    }
+
+    .cont_compra {
+        height: 85%;
+    }
+
+}
+
+@media (min-width: 767px) and (max-width: 1023px) and (orientation: landscape) {
+
+    /*Horizontal*/
+    section .form_compra {
+        grid-area: section;
+        display: grid;
+        grid-template:
+            "sec1 sec1" 80vh
+            "sec2 sec3" 40vh/
+            60% 40%
+        ;
+    }
+
+    .sec_1,
+    .sec_2 {
+        scale: .8;
+    }
+
+    footer {
+        display: none;
+    }
+
+    .cont_compra {
+        height: 95vh;
+    }
+
+}

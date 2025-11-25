@@ -198,7 +198,6 @@ h2.subtitle_log {
         backdrop-filter: blur(50px);
         -webkit-backdrop-filter: blur(50px);
         border-radius: 1em;
-
     }
 }
 
@@ -231,7 +230,6 @@ h2.subtitle_log {
         backdrop-filter: blur(50px);
         -webkit-backdrop-filter: blur(50px);
         border-radius: 1em;
-
     }
 
 }
@@ -259,7 +257,7 @@ h2.subtitle_log {
         -webkit-backdrop-filter: blur(50px);
         border-radius: 1em;
         width: 60%;
-        height: 700px;
+        height: 50vh;
     }
 
 }
@@ -286,5 +284,6 @@ h2.subtitle_log {
         -webkit-backdrop-filter: blur(50px);
         border-radius: 1em;
         transform: scale(0.8);
+        height: 450px;
     }
 }

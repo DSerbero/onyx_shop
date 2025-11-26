@@ -20,7 +20,7 @@ function crearArray($data, $clave, $tipo){
     $info_cliente = json_decode($_POST["id_cliente"], true);
     $cliente = strval(($info_cliente["id_cliente"]));
     $productos_recibidos = json_decode($_POST['productos_enviados'], true);
-    $productos = crearArray($productos_recibidos, "codigo", "cantidad");
+    $productos = json_encode(crearArray($productos_recibidos, "codigo", "cantidad"));
     $info_pago = json_decode($_POST['pago_info'], true);
     $pago = implode(",", $info_pago);
 

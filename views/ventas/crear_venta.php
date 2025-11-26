@@ -90,16 +90,24 @@ require "../../controllers/getClients.php";
         <!-- Modal crear nuevo cliente -->
         <div id="modal_nuevo_cliente" class="modal_cliente" style="display:none;">
             <div class="modal_contenido">
-                <h2>Registrar nuevo cliente</h2>
-                <div class="form_modal">
-                    <label>Nombre:</label><input type="text" id="nuevo_nombre">
-                    <label>Documento:</label><input type="text" id="nuevo_documento">
-                    <label>Dirección:</label><input type="text" id="nuevo_direccion">
-                    <label>Teléfono:</label><input type="text" id="nuevo_telefono">
-                    <label>Correo:</label><input type="email" id="nuevo_correo">
-                    <label>Referencia personal 1:</label><input type="text" id="nuevo_ref1">
-                    <label>Referencia personal 2:</label><input type="text" id="nuevo_ref2">
-                </div>
+                <table>
+                    <tr>
+                        <th colspan="2" class="title"><h2>Registrar nuevo cliente</h2></th>
+                    </tr>
+                    <tr><th><label>Nombre:</label></th><td><input type="text" id="nuevo_nombre"></td></tr>
+                    <tr><th><label>Documento:</label></th><td><input type="text" id="nuevo_documento"></td></tr>
+                    <tr><th><label>Dirección:</label></th><td><input type="text" id="nuevo_direccion"></td></tr>
+                    <tr><th><label>Teléfono:</label></th><td><input type="text" id="nuevo_telefono"></td></tr>
+                    <tr><th><label>Correo:</label></th><td><input type="email" id="nuevo_correo"></td></tr>
+                    <tr>
+                        <th><label>Referencia personal 1:</label></th>
+                        <td><input type="text" id="nuevo_ref1"></td>
+                    </tr>
+                    <tr>
+                        <th><label>Referencia personal 2:</label></th>
+                        <td><input type="text" id="nuevo_ref2"></td>
+                    </tr>
+                </table>
                 <div style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
                     <button id="guardar_nuevo_cliente" class="btn_guardar" type="button">Guardar</button>
                     <button type="button" class="cerrar_modal_cliente">Cerrar</button>

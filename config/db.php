@@ -1,8 +1,8 @@
 <?php
 function connect(){
     $hostname = "localhost";
-    $userdb = "root";
-    $password = "";
+    $userdb = "serbero";
+    $password = "iamSerbero01";
     $dbname = "onyx_shop";
 
     try {

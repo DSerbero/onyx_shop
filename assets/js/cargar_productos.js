@@ -179,11 +179,11 @@ form.addEventListener("submit", e => {
         return;
     }
 
-    if (credito.checked && !efectivo.checked && !transferencia.checked) {
-        e.preventDefault();
-        alert("El crédito debe ir acompañado de efectivo, transferencia o ambos.");
-        return;
-    }
+    // if (credito.checked && !efectivo.checked && !transferencia.checked) {
+    //     e.preventDefault();
+    //     alert("El crédito debe ir acompañado de efectivo, transferencia o ambos.");
+    //     return;
+    // }
 
     // Productos
     const filas = tabla.querySelectorAll("tr");

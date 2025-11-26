@@ -253,7 +253,6 @@
     padding: 5px;
     border-radius: 8px;
     background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
-
 }
 
 .btn_m:checked::before {

@@ -18,11 +18,11 @@ function crearArray($data, $clave, $tipo){
     $stmt->bindparam(3, $pago);
 
     $info_cliente = json_decode($_POST["id_cliente"], true);
-    $cliente = ($info_cliente["id_cliente"]);
+    $cliente = strval(($info_cliente["id_cliente"]));
     $productos_recibidos = json_decode($_POST['productos_enviados'], true);
-    $productos = crearArray($productos_recibidos, "codigo", "cantidad");
+    $productos = implode(",", crearArray($productos_recibidos, "codigo", "cantidad"));
     $info_pago = json_decode($_POST['pago_info'], true);
-    $pago = $info_pago;
+    $pago = implode(",", $info_pago);
 
 
     $result = $stmt->execute();

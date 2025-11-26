@@ -395,7 +395,7 @@
         grid-area: section;
         display: grid;
         grid-template:
-            "sec1 sec1" 80vh
+            "sec1 sec1" 60vh
             "sec2 sec3" 40vh/
             60% 40%
         ;
@@ -411,7 +411,7 @@
     }
 
     .cont_compra {
-        height: 95vh;
+        height: 500px;
     }
 
 }

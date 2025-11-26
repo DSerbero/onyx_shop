@@ -1,6 +1,9 @@
 <?php
 require "../../controllers/getProducts.php";
 require "../../controllers/getClients.php";
+include "../../controllers/session.php";
+
+if ($_SESSION["cargo"] === "admin") {  
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -174,3 +177,12 @@ require "../../controllers/getClients.php";
     </script>
 </body>
 </html>
+    <a href="controllers/unlog.php">Cerrar</a>
+    
+<?php
+?>
+
+<?php
+} else {
+    header("Location: login");
+}

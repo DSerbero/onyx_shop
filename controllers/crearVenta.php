@@ -22,7 +22,8 @@ function crearArray($data, $clave, $tipo){
     $stmt->bindparam(3, $pago);
 
     $info_cliente = json_decode($_POST["id_cliente"], true);
-    $cliente = strval(($info_cliente["id_cliente"]));
+    $cliente = ($info_cliente);
+    print_r($info_cliente);
     $productos_recibidos = json_decode($_POST['productos_enviados'], true);
     $productos = json_encode(crearArray($productos_recibidos, "codigo", "cantidad"));
     $info_pago = json_decode($_POST['pago_info'], true);

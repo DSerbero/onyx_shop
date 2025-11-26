@@ -76,12 +76,12 @@ function renderCredito() {
 
     if (!credito.checked) return;
 
-    // Debe tener al menos un método adicional
-    if (!efectivo.checked && !transferencia.checked) {
-        alert("El crédito debe ir acompañado de efectivo, transferencia o ambos.");
-        credito.checked = false;
-        return;
-    }
+    // // Debe tener al menos un método adicional
+    // if (!efectivo.checked && !transferencia.checked) {
+    //     alert("El crédito debe ir acompañado de efectivo, transferencia o ambos.");
+    //     credito.checked = false;
+    //     return;
+    // }
 
     const total = parseFloat(totalCompra.textContent.replace(/\D/g, "")) || 0;
 

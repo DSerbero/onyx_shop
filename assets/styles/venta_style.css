@@ -229,7 +229,7 @@
     font-weight: bold;
 }
 
-.btn_cerrar:hover {
+.btn_cerrar:hover,.btn_guardar:hover, .cerrar_modal_cliente:hover  {
     background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
 
 }

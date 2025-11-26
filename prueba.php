@@ -9,6 +9,18 @@ if ($_POST["crear_venta"]) {
         echo "<pre>";
         print_r($productos_recibidos);
         echo "</pre>";
+
+        function crearArray($data, $clave, $tipo){
+            $dato = array();
+            foreach($data as $i) {
+                $dato[$i[$clave]] = $i[$tipo];
+            }
+            return $dato;
+        }
+        $producta = crearArray($productos_recibidos, "codigo", "cantidad");
+
+
+        print_r($producta);
     }
 
     $pago = json_decode($_POST['pago_info'], true);
@@ -25,7 +37,7 @@ if ($_POST["crear_venta"]) {
     // }
 
     $cliente = json_decode($_POST["cliente_info"], true);
-    print_r($cliente);
+    print_r($cliente["id_cliente"]);
 
 
     // include "config/db.php";

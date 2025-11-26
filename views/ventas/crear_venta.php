@@ -17,7 +17,7 @@ require "../../controllers/getClients.php";
         <h1>Proceso de venta</h1>
     </div>
     <section>
-        <form action="prueba.php" class="form_compra" method="post">
+        <form action="controllers/crearVenta.php" class="form_compra" method="post">
             <div class="sec_1">
                 <div class="cont_compra">
                     <h2>Lista de productos</h2>

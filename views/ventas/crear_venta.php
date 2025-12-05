@@ -14,64 +14,7 @@ if ($_SESSION["cargo"] === "admin") {
         <title>Proceso de venta</title>
         <link rel="stylesheet" href="assets/styles/gen_style.css">
         <link rel="stylesheet" href="assets/styles/venta_style.css">
-        <style>
-            .btn_menu {
-                font-size: 28px;
-                background: none;
-                border: none;
-                cursor: pointer;
-                color: white;
-            }
-
-            .sidebar {
-                position: fixed;
-                left: -260px;
-                top: 0;
-                width: 260px;
-                height: 100%;
-                background: #1a1a1a;
-                padding-top: 60px;
-                transition: 0.3s;
-                z-index: 999;
-            }
-
-            .sidebar ul {
-                list-style: none;
-            }
-
-            .sidebar ul li {
-                padding: 15px 20px;
-            }
-
-            .sidebar ul li a {
-                color: white;
-                text-decoration: none;
-                font-size: 18px;
-            }
-
-            .sidebar ul li:hover {
-                background: #333;
-            }
-
-            .sidebar.active {
-                left: 0;
-            }
-
-            .overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: #00000085;
-                display: none;
-                z-index: 998;
-            }
-
-            .overlay.active {
-                display: block;
-            }
-        </style>
+        <link rel="stylesheet" href="assets/styles/header_style.css">
     </head>
 
     <body>

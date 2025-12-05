@@ -155,8 +155,17 @@ inputCliente.addEventListener("keyup", () => {
 
 /* ------------- SUBMIT FORM ------------- */
 form.addEventListener("submit", e => {
+    const filasProductos = Array.from(tabla.querySelectorAll("tr")).slice(1); // ignorar encabezado
 
-    // VALIDAR CLIENTE
+    // Filtrar solo filas que tengan inputs de código (es decir, productos válidos)
+    const productosAgregados = filasProductos.filter(fila => fila.querySelector("td input"));
+
+    if (productosAgregados.length === 0) {
+        e.preventDefault();
+        alert("Debe agregar al menos un producto.");
+        return;
+    }
+
     const infoCliente = document.getElementById("cliente_info").value;
     if (!infoCliente || infoCliente.trim() === "") {
         e.preventDefault();
@@ -172,7 +181,7 @@ form.addEventListener("submit", e => {
         return;
     }
 
-    // VALIDAR MÉTODOS DE PAGO
+
     if (!efectivo.checked && !transferencia.checked && !credito.checked) {
         e.preventDefault();
         alert("Debe seleccionar al menos un método de pago.");
@@ -185,7 +194,6 @@ form.addEventListener("submit", e => {
         return;
     }
 
-    // Productos
     const filas = tabla.querySelectorAll("tr");
     const productosArray = [];
 
@@ -231,7 +239,7 @@ form.addEventListener("submit", e => {
             pago.monto_transferencia = abono;
         }
     }
-    // Mixto sin crédito
+
     else if (efectivo.checked && transferencia.checked) {
         const mixtoBox = document.getElementById("mixto_box");
         pago = {
@@ -241,14 +249,14 @@ form.addEventListener("submit", e => {
             total
         };
     }
-    // Efectivo solo
+
     else if (efectivo.checked) {
         pago = {
             tipo: "efectivo",
             total
         };
     }
-    // Transferencia solo
+
     else if (transferencia.checked) {
         pago = {
             tipo: "transferencia",
@@ -259,7 +267,7 @@ form.addEventListener("submit", e => {
     document.getElementById("pago_info").value = JSON.stringify(pago);
 });
 
-/* ------------- MODAL EDICIÓN CLIENTE EXISTENTE ------------- */
+
 document.getElementById("modal_nombre").addEventListener("input", e => {
     if (window.clienteSeleccionado) {
         window.clienteSeleccionado.nombre = e.target.value;

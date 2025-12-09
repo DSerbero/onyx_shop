@@ -4,7 +4,7 @@ include "session.php";
 $conn = connect();
 
 try {;
-    $stmt = $conn->prepare("SELECT cargo, correo, contraseña FROM usuarios WHERE correo=?");
+    $stmt = $conn->prepare("SELECT nombre, cargo, correo, contraseña FROM usuarios WHERE correo=?");
     $stmt->bindparam(1, $correo);
 
     $correo = $_POST["email"];
@@ -14,6 +14,7 @@ try {;
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (password_verify($_POST['password'], $user['contraseña'])) {
+        $_SESSION["nombre"] = $user["nombre"];
         $_SESSION["cargo"] = $user["cargo"];
         $_SESSION["user"] = $user["correo"];
 

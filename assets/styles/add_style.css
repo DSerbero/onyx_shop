@@ -12,17 +12,18 @@ table h1 {
 }
 
 table {
-    border: 3px solid transparent;
+    border: 3px solid rgba(0,0,0,0);
 }
 
 table * {
     padding: 8px;
-    border: 3px solid #fff;
+    
 }
 
 table th {
     background: var(--td_tab1);
     min-width: 130px;
+    border: 3px solid #fff;
 }
 
 table label {
@@ -31,14 +32,14 @@ table label {
 
 table td {
     background: var(--td_tab2);
-    display: flex;
-    justify-content: end;
+    text-align: right;
+    border: 3px solid #fff;
 }
 
 table input[type="text"],
 table input[type="number"] {
     border: none;
-    background: transparent;
+    background: rgba(0,0,0,0);
     text-align: end;
 }
 

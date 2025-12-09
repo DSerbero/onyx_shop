@@ -5,7 +5,7 @@ include "../../config/db.php";
 $productos = [];
 
 $conn = connect();
-$stmt = $conn->query("SELECT codigo, nombre, cantidad, venta FROM productos");
+$stmt = $conn->query("SELECT * FROM productos");
 $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 

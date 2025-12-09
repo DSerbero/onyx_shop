@@ -41,6 +41,7 @@ body {
     width: 35%;
 }
 
+
 .icon {
     width: 60%;
 }
@@ -172,7 +173,12 @@ h2.subtitle_log {
         backdrop-filter: blur(50px);
         -webkit-backdrop-filter: blur(50px);
         border-radius: 1em;
+        height: 550px;
+        transition: all 0.5s ease-in-out;
+    }
 
+    .form.res {
+        height: 600px;
     }
 }
 
@@ -198,6 +204,7 @@ h2.subtitle_log {
         backdrop-filter: blur(50px);
         -webkit-backdrop-filter: blur(50px);
         border-radius: 1em;
+        transition: all 0.5s ease-in-out;
     }
 }
 
@@ -230,6 +237,7 @@ h2.subtitle_log {
         backdrop-filter: blur(50px);
         -webkit-backdrop-filter: blur(50px);
         border-radius: 1em;
+        transition: all 0.5s ease-in-out;
     }
 
 }
@@ -258,6 +266,12 @@ h2.subtitle_log {
         border-radius: 1em;
         width: 60%;
         height: 50vh;
+        transition: all 0.5s ease-in-out;
+    }
+
+    
+    .form.res {
+        height: 60vh;
     }
 
 }
@@ -285,5 +299,11 @@ h2.subtitle_log {
         border-radius: 1em;
         transform: scale(0.8);
         height: 450px;
+        transition: all 0.5s ease-in-out;
+    }
+
+    
+    .form.res {
+        height: 550px;
     }
 }

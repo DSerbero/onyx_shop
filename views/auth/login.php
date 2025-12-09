@@ -51,6 +51,12 @@ include "../../controllers/errores.php"
                     <h2 class="subtitle_log">Registrarse</h2>
                     <form action="controllers/singup.php" method="post" class="form_rec">
                         <div class="input_field">
+                            <input type="text" name="nombre" id="nombre" required>
+                            <label for="nombre">
+                                Nombre
+                            </label>
+                        </div>
+                        <div class="input_field">
                             <input type="text" name="email" id="emai" required>
                             <label for="email">
                                 E-mail
@@ -74,6 +80,7 @@ include "../../controllers/errores.php"
         document.querySelectorAll('.flip_btn').forEach(button => {
             button.addEventListener('click', () => {
                 document.querySelector('.form_flip').classList.toggle('flipped');
+                document.querySelector('.form').classList.toggle('res');
             });
         });
     </script>

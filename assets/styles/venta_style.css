@@ -62,10 +62,30 @@
     scrollbar-color: var(--th_tab) var(--bgtab);
 }
 
-.cont_compra table,
+.tabla_scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tabla_scroll::-webkit-scrollbar-track {
+    background: var(--bgtab);
+}
+
+.tabla_scroll::-webkit-scrollbar-thumb {
+    background: var(--th_tab);
+    border-radius: 10px;
+}
+
+
+.cont_compra table {
+    border: 3px solid var(--bgtab);
+    border-collapse: collapse;
+}
+
 .cont_compra table * {
     border: 3px solid var(--bgtab);
+    padding: 8px;
 }
+
 
 .cont_compra table {
     max-height: 400px;
@@ -91,20 +111,22 @@
 
 
 .cont_compra table img {
-    border: none;
+    border: none !important;
     height: 20px;
     padding: 0px;
 }
 
 .cont_compra table a {
-    border: none;
+    border: none !important;
 
 }
 
 .cont_compra table input[type="text"],
 .cont_compra table input[type="number"] {
     border: none;
-    background: transparent;
+    background: rgba(0, 0, 0, 0);
+    -webkit-appearance: none;
+    appearance: none;
     text-align: end;
 }
 
@@ -142,13 +164,15 @@
     width: 30px;
     height: 30px;
     border-radius: 8px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .cliente>button>img {
     border-radius: 5px;
     width: 100%;
 }
-
 
 .modal_cliente {
     display: none;
@@ -163,17 +187,9 @@
     z-index: 9999;
 }
 
-.modal_contenido table h2 {
-    border: none;
-}
-
-.modal_contenido table th.title {
-    background: var(--th_tab);
-}
-
 .modal_contenido {
     background: var(--bgtab);
-    width: 380px;
+    width: 420px;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -183,27 +199,24 @@
 }
 
 .modal_contenido table {
-    border: 3px solid var(--bgtab);
+    border-collapse: collapse;
+    width: 100%;
 }
 
-.modal_contenido table * {
-    padding: 8px;
+.modal_contenido table th,
+.modal_contenido table td {
     border: 3px solid var(--bgtab);
+    padding: 8px;
+}
+
+.modal_contenido table td {
+    background: var(--td_tab2);
+    text-align: right;
 }
 
 .modal_contenido table th {
     background: var(--td_tab1);
     min-width: 130px;
-}
-
-.modal_contenido table label {
-    border: none;
-}
-
-.modal_contenido table td {
-    background: var(--td_tab2);
-    display: flex;
-    justify-content: end;
 }
 
 .modal_contenido h2 {
@@ -216,9 +229,13 @@
     border: none;
     background: transparent;
     text-align: end;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-.btn_cerrar, .btn_guardar, .cerrar_modal_cliente {
+.btn_cerrar,
+.btn_guardar,
+.cerrar_modal_cliente {
     margin-top: 10px;
     padding: 10px;
     background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
@@ -227,9 +244,13 @@
     cursor: pointer;
     border-radius: 5px;
     font-weight: bold;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-.btn_cerrar:hover,.btn_guardar:hover, .cerrar_modal_cliente:hover  {
+.btn_cerrar:hover,
+.btn_guardar:hover,
+.cerrar_modal_cliente:hover {
     background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
 
 }
@@ -273,6 +294,7 @@
 }
 
 
+
 .sec_3>input[type="submit"] {
     width: 40%;
     height: 40px;
@@ -281,7 +303,11 @@
     background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
     border: none;
     border-radius: 12px;
+    -webkit-appearance: none;
+    appearance: none;
+
 }
+
 
 
 .sec_3>input[type="submit"]:hover {
@@ -343,7 +369,8 @@
 
     .sec_1,
     .sec_2 {
-        scale: .8;
+        transform: scale(0.8);
+        -webkit-transform: scale(0.8);
     }
 
     footer {
@@ -365,9 +392,9 @@
         grid-area: section;
         display: grid;
         grid-template:
-            "sec1" 50vh
-            "sec2" 20vh
-            "sec3" 10vh/
+            "sec1" 50dvh
+            "sec2" 20dvh
+            "sec3" 10dvh/
             100%
         ;
     }
@@ -375,7 +402,8 @@
     .sec_1,
     .sec_2,
     .sec_3 {
-        scale: 0.8;
+        transform: scale(0.8);
+        -webkit-transform: scale(0.8);
     }
 
     footer {
@@ -395,15 +423,16 @@
         grid-area: section;
         display: grid;
         grid-template:
-            "sec1 sec1" 60vh
-            "sec2 sec3" 40vh/
+            "sec1 sec1" 60dvh
+            "sec2 sec3" 40dvh/
             60% 40%
         ;
     }
 
     .sec_1,
     .sec_2 {
-        scale: .8;
+        transform: scale(0.8);
+        -webkit-transform: scale(0.8);
     }
 
     footer {
@@ -411,7 +440,7 @@
     }
 
     .cont_compra {
-        height: 500px;
+        height: 400px;
     }
 
 }

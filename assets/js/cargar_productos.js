@@ -1,4 +1,3 @@
-// cargar_productos.js - actualizado para cliente_info y envío correcto
 
 let clienteSeleccionado = null;
 
@@ -28,7 +27,6 @@ function actualizarTotal() {
 
     totalCompra.textContent = formatoMoneda.format(total);
 
-    // Si existe saldo_credito recalcularlo (para mantener actualizado cuando cambia total)
     const inputSaldo = document.getElementById("saldo_credito");
     const inputAbono = document.getElementById("abono_credito");
     if (inputSaldo && inputAbono) {
@@ -109,6 +107,7 @@ inputBuscar.addEventListener("keyup", () => {
 });
 
 /* ---------------- CLIENTES ---------------- */
+console.log(clientes);
 inputCliente.addEventListener("keyup", () => {
     const texto = inputCliente.value.toLowerCase().trim();
     listaClientes.innerHTML = "";
@@ -126,26 +125,26 @@ inputCliente.addEventListener("keyup", () => {
         item.textContent = `${cli.nombre} - ${cli.documento}`;
 
         item.addEventListener("click", () => {
-            clienteSeleccionado = { ...cli }; // guardamos copia editable
+            clienteSeleccionado = { ...cli };
             window.clienteSeleccionado = clienteSeleccionado;
 
             inputCliente.value = clienteSeleccionado.nombre;
             listaClientes.innerHTML = "";
 
-            // Guardar en hidden cliente_info (JSON)
             document.getElementById("cliente_info").value = JSON.stringify(clienteSeleccionado);
 
-            // Mantener id_cliente por compatibilidad (opcional)
             document.getElementById("id_cliente").value = clienteSeleccionado.id_cliente;
 
-            // llenar modal con datos
+
             document.getElementById("modal_nombre").value = clienteSeleccionado.nombre || "";
             document.getElementById("modal_documento").value = clienteSeleccionado.documento || "";
             document.getElementById("modal_direccion").value = clienteSeleccionado.direccion || "";
             document.getElementById("modal_telefono").value = clienteSeleccionado.telefono || "";
             document.getElementById("modal_correo").value = clienteSeleccionado.correo || "";
+            document.getElementById("modal_ref1").value = clienteSeleccionado.referencia1 || "";
+            document.getElementById("modal_ref2").value = clienteSeleccionado.referencia2 || "";
 
-            // mostrar modal
+
             document.getElementById("modal_cliente").style.display = "flex";
         });
 
@@ -155,9 +154,9 @@ inputCliente.addEventListener("keyup", () => {
 
 /* ------------- SUBMIT FORM ------------- */
 form.addEventListener("submit", e => {
-    const filasProductos = Array.from(tabla.querySelectorAll("tr")).slice(1); // ignorar encabezado
+    const filasProductos = Array.from(tabla.querySelectorAll("tr")).slice(1);
 
-    // Filtrar solo filas que tengan inputs de código (es decir, productos válidos)
+
     const productosAgregados = filasProductos.filter(fila => fila.querySelector("td input"));
 
     if (productosAgregados.length === 0) {
@@ -211,38 +210,48 @@ form.addEventListener("submit", e => {
     inputProductosEnviados.value = JSON.stringify(productosArray);
 
     const total = parseFloat(totalCompra.textContent.replace(/\D/g, "")) || 0;
-    let pago = {};
 
-    // Si crédito (con posibilidad de mixto)
+    // 1) LISTA DE MÉTODOS SELECCIONADOS
+    let metodos = [];
+    if (efectivo.checked) metodos.push("efectivo");
+    if (transferencia.checked) metodos.push("transferencia");
+    if (credito.checked) metodos.push("credito");
+
+    // 2) OBJETO PRINCIPAL A ENVIAR
+    let pago = {
+        metodos: metodos,
+        detalles: {}
+    };
+
+    // 3) SI HAY CRÉDITO
     if (credito.checked) {
         const abono = parseFloat(document.getElementById("abono_credito")?.value || 0);
         const saldo = Math.max(0, total - abono);
         const cuotas = parseInt(document.getElementById("num_cuotas")?.value || 1);
 
-        pago = {
+        pago.detalles = {
             tipo: "credito",
             total,
             abono,
             saldo,
             cuotas,
-            valor_cuota: Math.ceil(saldo / cuotas),
-            monto_efectivo: 0,
-            monto_transferencia: 0
+            valor_cuota: Math.ceil(saldo / cuotas)
         };
 
-        if (efectivo.checked && transferencia.checked) {
-            pago.monto_efectivo = parseFloat(document.getElementById("pago_efectivo")?.value || 0);
-            pago.monto_transferencia = parseFloat(document.getElementById("pago_transferencia")?.value || 0);
-        } else if (efectivo.checked) {
-            pago.monto_efectivo = abono;
-        } else if (transferencia.checked) {
-            pago.monto_transferencia = abono;
+        // Si crédito + efectivo o transferencia
+        if (efectivo.checked) {
+            pago.detalles.monto_efectivo = parseFloat(document.getElementById("pago_efectivo")?.value || 0);
+        }
+
+        if (transferencia.checked) {
+            pago.detalles.monto_transferencia = parseFloat(document.getElementById("pago_transferencia")?.value || 0);
         }
     }
 
+    // 4) MIXTO NORMAL (efectivo + transferencia SIN crédito)
     else if (efectivo.checked && transferencia.checked) {
         const mixtoBox = document.getElementById("mixto_box");
-        pago = {
+        pago.detalles = {
             tipo: "mixto",
             efectivo: parseFloat(mixtoBox?.querySelector("input[placeholder='Efectivo']")?.value || 0),
             transferencia: parseFloat(mixtoBox?.querySelector("input[placeholder='Transferencia']")?.value || 0),
@@ -250,21 +259,25 @@ form.addEventListener("submit", e => {
         };
     }
 
+    // 5) SOLO EFECTIVO
     else if (efectivo.checked) {
-        pago = {
+        pago.detalles = {
             tipo: "efectivo",
             total
         };
     }
 
+    // 6) SOLO TRANSFERENCIA
     else if (transferencia.checked) {
-        pago = {
+        pago.detalles = {
             tipo: "transferencia",
             total
         };
     }
 
+    // 7) ENVIAR A PHP
     document.getElementById("pago_info").value = JSON.stringify(pago);
+
 });
 
 
@@ -296,6 +309,20 @@ document.getElementById("modal_telefono").addEventListener("input", e => {
 document.getElementById("modal_correo").addEventListener("input", e => {
     if (window.clienteSeleccionado) {
         window.clienteSeleccionado.correo = e.target.value;
+        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
+    }
+});
+
+document.getElementById("modal_ref1").addEventListener("input", e => {
+    if (window.clienteSeleccionado) {
+        window.clienteSeleccionado.referencia1 = e.target.value;
+        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
+    }
+});
+
+document.getElementById("modal_ref2").addEventListener("input", e => {
+    if (window.clienteSeleccionado) {
+        window.clienteSeleccionado.referencia2 = e.target.value;
         document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
     }
 });

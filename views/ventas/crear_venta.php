@@ -3,7 +3,8 @@ require "../../controllers/getProducts.php";
 require "../../controllers/getClients.php";
 include "../../controllers/session.php";
 
-if ($_SESSION["cargo"] === "admin") {
+if ($_SESSION["cargo"] === "admin" || $_SESSION["cargo"] === "code") {
+
 ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -103,6 +104,15 @@ if ($_SESSION["cargo"] === "admin") {
                             <th><label>Correo:</label></th>
                             <td><input type="text" id="modal_correo"></td>
                         </tr>
+                        <tr>
+                            <th><label>Referencia 1:</label></th>
+                            <td><input type="text" id="modal_ref1"></td>
+                        </tr>
+                        <tr>
+                            <th><label>Referencia 2:</label></th>
+                            <td><input type="text" id="modal_ref2"></td>
+                        </tr>
+
                     </table>
                     <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
                         <button type="button" id="cerrar_modal" class="btn_cerrar">Cerrar</button>
@@ -110,7 +120,7 @@ if ($_SESSION["cargo"] === "admin") {
                 </div>
             </div>
 
-            <!-- Modal crear nuevo cliente -->
+
             <div id="modal_nuevo_cliente" class="modal_cliente" style="display:none;">
                 <div class="modal_contenido">
                     <table>
@@ -140,12 +150,25 @@ if ($_SESSION["cargo"] === "admin") {
                             <td><input type="email" id="nuevo_correo"></td>
                         </tr>
                         <tr>
-                            <th><label>Referencia personal 1:</label></th>
-                            <td><input type="text" id="nuevo_ref1"></td>
+                            <th colspan="2">
+                                <h2>Referencias personales</h2>
+                            </th>
                         </tr>
                         <tr>
-                            <th><label>Referencia personal 2:</label></th>
-                            <td><input type="text" id="nuevo_ref2"></td>
+                            <th><label>Nombre:</label></th>
+                            <td><input type="text" id="nom_nuevo_ref1"></td>
+                        </tr>
+                        <tr>
+                            <th><label>Teléfono:</label></th>
+                            <td><input type="text" id="tel_nuevo_ref1"></td>
+                        </tr>
+                        <tr>
+                            <th><label>Nombre:</label></th>
+                            <td><input type="text" id="nom_nuevo_ref2"></td>
+                        </tr>
+                        <tr>
+                            <th><label>Teléfono:</label></th>
+                            <td><input type="text" id="tel_nuevo_ref2"></td>
                         </tr>
                     </table>
                     <div style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
@@ -163,30 +186,31 @@ if ($_SESSION["cargo"] === "admin") {
             const clientes = <?= $json_clientes ?>;
         </script>
         <script src="assets/js/cargar_productos.js"></script>
-
-        <!-- Cliente modal inline small helpers (keeps handlers with page) -->
+        <script src="assets/js/menu.js"></script>
         <script>
-            // Abrir modal nuevo
             document.getElementById("btn_nuevo_cliente").addEventListener("click", () => {
                 document.getElementById("modal_nuevo_cliente").style.display = "flex";
             });
 
-            // Cerrar modal nuevo (delegado por clase)
             document.addEventListener("click", (e) => {
                 if (e.target.classList.contains("cerrar_modal_cliente")) {
                     document.getElementById("modal_nuevo_cliente").style.display = "none";
                 }
             });
 
-            // Guardar nuevo cliente (frontend only -> saved into cliente_info)
             document.getElementById("guardar_nuevo_cliente").addEventListener("click", () => {
                 const nombre = document.getElementById("nuevo_nombre").value.trim();
                 const documento = document.getElementById("nuevo_documento").value.trim();
                 const direccion = document.getElementById("nuevo_direccion").value.trim();
                 const telefono = document.getElementById("nuevo_telefono").value.trim();
                 const correo = document.getElementById("nuevo_correo").value.trim();
-                const ref1 = document.getElementById("nuevo_ref1").value.trim();
-                const ref2 = document.getElementById("nuevo_ref2").value.trim();
+                const ref1Nombre = document.getElementById("nom_nuevo_ref1").value.trim();
+                const ref1Telefono = document.getElementById("tel_nuevo_ref1").value.trim();
+                const ref2Nombre = document.getElementById("nom_nuevo_ref2").value.trim();
+                const ref2Telefono = document.getElementById("tel_nuevo_ref2").value.trim();
+
+                const referencia1 = `${ref1Nombre} - ${ref1Telefono}`.trim();
+                const referencia2 = `${ref2Nombre} - ${ref2Telefono}`.trim();
 
 
                 const clienteNuevo = {
@@ -195,8 +219,8 @@ if ($_SESSION["cargo"] === "admin") {
                     direccion,
                     telefono,
                     correo,
-                    referencia1: ref1 || "",
-                    referencia2: ref2 || ""
+                    referencia1: referencia1 || "",
+                    referencia2: referencia2 || ""
                 };
 
                 window.clienteNuevo = clienteNuevo;
@@ -204,23 +228,12 @@ if ($_SESSION["cargo"] === "admin") {
                 document.getElementById("modal_nuevo_cliente").style.display = "none";
             });
 
-            // Cerrar / sincronizar modal cliente existente
+
             document.getElementById("cerrar_modal").addEventListener("click", () => {
                 if (window.clienteSeleccionado) {
                     document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
                 }
                 document.getElementById("modal_cliente").style.display = "none";
-            });
-        </script>
-        <script>
-            document.getElementById("btn_menu").addEventListener("click", () => {
-                document.getElementById("sidebar").classList.add("active");
-                document.getElementById("overlay").classList.add("active");
-            });
-
-            document.getElementById("overlay").addEventListener("click", () => {
-                document.getElementById("sidebar").classList.remove("active");
-                document.getElementById("overlay").classList.remove("active");
             });
         </script>
     </body>

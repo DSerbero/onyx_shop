@@ -1,7 +1,7 @@
 <?php
 include "../../controllers/session.php";
 
-if ($_SESSION["cargo"] === "admin" ||$_SESSION["cargo"] === "code") {
+if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESSION["cargo"] === "code") {
 ?>
 
     <!DOCTYPE html>

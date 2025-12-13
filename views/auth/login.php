@@ -1,5 +1,8 @@
 <?php
-include "../../controllers/errores.php"
+include "../../controllers/errores.php";
+include "../../controllers/session.php";
+
+if (!isset($_SESSION["cargo"])){
 ?>
 
 <!DOCTYPE html>
@@ -87,3 +90,8 @@ include "../../controllers/errores.php"
 </body>
 
 </html>
+<?php
+} else {
+    header("Location: venta");
+}
+?>

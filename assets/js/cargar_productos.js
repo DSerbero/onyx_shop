@@ -21,7 +21,10 @@ function actualizarTotal() {
     let total = 0;
 
     for (let i = 1; i < filas.length; i++) {
-        const totalFila = filas[i].querySelector(".total").value.replace(/\D/g, "") || 0;
+        const inputTotal = filas[i].querySelector(".total");
+        const valor = inputTotal.value || "0";
+        const totalFila = parseFloat(valor.replace(/\D/g, "")) || 0;
+
         total += parseFloat(totalFila);
     }
 

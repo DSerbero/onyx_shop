@@ -1,0 +1,91 @@
+section {
+    grid-area: section;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.filtro-card {
+    background: var(--bgtab);
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px #00000030;
+    width: 420px;
+    height: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+button {
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+h2 {
+    color: var(--deg2);
+    text-align: center;
+}
+
+label {
+    font-weight: bold;
+    font-size: 17px;
+    color: var(--deg2);
+}
+
+input[type="datetime-local"] {
+    margin-top: 5px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--td_tab1);
+    background: var(--td_tab2);
+}
+
+.resumen-ventas {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.card-resumen {
+    width: 90%;
+    max-width: 500px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px #00000030;
+    padding: 20px;
+    border: 1px solid var(--td_tab1);
+    height: 500px;
+}
+
+
+.card-resumen h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--deg2);
+}
+
+.card-resumen p {
+    font-size: 15px;
+    margin: 8px 0;
+}
+
+.card-resumen span {
+    font-weight: bold;
+    color: var(--deg2);
+}
+
+.rent {
+    font-size: 17px;
+    font-weight: bold;
+    color: var(--deg2);
+}

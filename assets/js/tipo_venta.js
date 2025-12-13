@@ -140,19 +140,32 @@ function renderCredito() {
     const selCt = document.createElement("select");
     selCt.id = "num_cuotas";
 
-    for (let i = 2; i <= 12; i++) {
-        const o = document.createElement("option");
-        o.value = i;
-        o.textContent = `${i} cuotas`;
-        selCt.appendChild(o);
+    // Función para llenar opciones con el valor de la cuota
+    function cargarCuotas() {
+        selCt.innerHTML = "";
+
+        const ab = parseFloat(inpAbono.value) || 0;
+        const saldo = Math.max(0, total - ab);
+
+        for (let i = 1; i <= 12; i++) {
+            const o = document.createElement("option");
+            o.value = i;
+
+            const cuota = saldo / i;
+            o.textContent = `${i} cuota${i > 1 ? "s" : ""} - ${formatoMoneda.format(cuota)}`;
+
+            selCt.appendChild(o);
+        }
     }
+
+    cargarCuotas();
 
     box.appendChild(lblCt);
     box.appendChild(selCt);
 
+
     cont.appendChild(box);
 
-    // === LÓGICA ABONO ===
     function actualizarSaldo() {
         const ab = parseFloat(inpAbono.value) || 0;
         const saldo = Math.max(0, total - ab);
@@ -161,7 +174,12 @@ function renderCredito() {
 
     inpAbono.addEventListener("input", actualizarSaldo);
 
-    // === LÓGICA DE DIVISIÓN ENTRE EFECTIVO Y TRANSFERENCIA ===
+    inpAbono.addEventListener("input", () => {
+        actualizarSaldo();
+        cargarCuotas(); // ← ACTUALIZA EL SELECT
+    });
+
+
     function actualizarMixto() {
         const ab = parseFloat(inpAbono.value) || 0;
 
@@ -178,20 +196,19 @@ function renderCredito() {
     if (inpTr) inpTr.addEventListener("input", actualizarMixto);
 }
 
-/* ============================================================
-   EVENTOS
-   ============================================================ */
+
 efectivo.addEventListener("change", () => {
-    renderPagoMixtoNormal();
     renderCredito();
+    renderPagoMixtoNormal();
 });
 
 transferencia.addEventListener("change", () => {
-    renderPagoMixtoNormal();
     renderCredito();
+    renderPagoMixtoNormal();
 });
 
 credito.addEventListener("change", () => {
-    renderPagoMixtoNormal();
     renderCredito();
+    renderPagoMixtoNormal();
 });
+

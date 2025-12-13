@@ -3,7 +3,7 @@ require "../../controllers/getProducts.php";
 require "../../controllers/getClients.php";
 include "../../controllers/session.php";
 
-if ($_SESSION["cargo"] === "admin" || $_SESSION["cargo"] === "code") {
+if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESSION["cargo"] === "code") {
 
 ?>
     <!DOCTYPE html>
@@ -123,54 +123,59 @@ if ($_SESSION["cargo"] === "admin" || $_SESSION["cargo"] === "code") {
 
             <div id="modal_nuevo_cliente" class="modal_cliente" style="display:none;">
                 <div class="modal_contenido">
-                    <table>
-                        <tr>
-                            <th colspan="2" class="title">
-                                <h2>Registrar nuevo cliente</h2>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th><label>Nombre:</label></th>
-                            <td><input type="text" id="nuevo_nombre"></td>
-                        </tr>
-                        <tr>
-                            <th><label>Documento:</label></th>
-                            <td><input type="text" id="nuevo_documento"></td>
-                        </tr>
-                        <tr>
-                            <th><label>Dirección:</label></th>
-                            <td><input type="text" id="nuevo_direccion"></td>
-                        </tr>
-                        <tr>
-                            <th><label>Teléfono:</label></th>
-                            <td><input type="text" id="nuevo_telefono"></td>
-                        </tr>
-                        <tr>
-                            <th><label>Correo:</label></th>
-                            <td><input type="email" id="nuevo_correo"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="2">
-                                <h2>Referencias personales</h2>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th><label>Nombre:</label></th>
-                            <td><input type="text" id="nom_nuevo_ref1"></td>
-                        </tr>
-                        <tr>
-                            <th><label>Teléfono:</label></th>
-                            <td><input type="text" id="tel_nuevo_ref1"></td>
-                        </tr>
-                        <tr>
-                            <th><label>Nombre:</label></th>
-                            <td><input type="text" id="nom_nuevo_ref2"></td>
-                        </tr>
-                        <tr>
-                            <th><label>Teléfono:</label></th>
-                            <td><input type="text" id="tel_nuevo_ref2"></td>
-                        </tr>
-                    </table>
+                    <div class="tablas">
+                        <table>
+                            <tr>
+                                <th colspan="2" class="title">
+                                    <h2>Registrar nuevo cliente</h2>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th><label>Nombre:</label></th>
+                                <td><input type="text" id="nuevo_nombre"></td>
+                            </tr>
+                            <tr>
+                                <th><label>Documento:</label></th>
+                                <td><input type="text" id="nuevo_documento"></td>
+                            </tr>
+                            <tr>
+                                <th><label>Dirección:</label></th>
+                                <td><input type="text" id="nuevo_direccion"></td>
+                            </tr>
+                            <tr>
+                                <th><label>Teléfono:</label></th>
+                                <td><input type="text" id="nuevo_telefono"></td>
+                            </tr>
+                            <tr>
+                                <th><label>Correo:</label></th>
+                                <td><input type="email" id="nuevo_correo"></td>
+                            </tr>
+
+                        </table>
+                        <table>
+                            <tr>
+                                <th colspan="2">
+                                    <h2>Referencias personales</h2>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th><label>Nombre:</label></th>
+                                <td><input type="text" id="nom_nuevo_ref1"></td>
+                            </tr>
+                            <tr>
+                                <th><label>Teléfono:</label></th>
+                                <td><input type="text" id="tel_nuevo_ref1"></td>
+                            </tr>
+                            <tr>
+                                <th><label>Nombre:</label></th>
+                                <td><input type="text" id="nom_nuevo_ref2"></td>
+                            </tr>
+                            <tr>
+                                <th><label>Teléfono:</label></th>
+                                <td><input type="text" id="tel_nuevo_ref2"></td>
+                            </tr>
+                        </table>
+                    </div>
                     <div style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
                         <button id="guardar_nuevo_cliente" class="btn_guardar" type="button">Guardar</button>
                         <button type="button" class="cerrar_modal_cliente">Cerrar</button>

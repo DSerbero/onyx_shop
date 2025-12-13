@@ -198,6 +198,14 @@
     gap: 8px;
 }
 
+#modal_nuevo_cliente .modal_contenido{
+    width: 800px;
+}
+
+.modal_contenido .tablas{
+    display: flex;
+}
+
 .modal_contenido table {
     border-collapse: collapse;
     width: 100%;
@@ -256,6 +264,46 @@
 }
 
 .metodo_pag {}
+
+#mixto_box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#mixto_box input {
+    height: 30px;
+    width: 150px;
+    border: 1px solid black;
+    padding: 5px;
+    border-radius: 8px;
+    background: var(--td_tab1);
+}
+
+#credito_box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 2px;
+}
+
+#credito_box input {
+    height: 30px;
+    width: 150px;
+    border: 1px solid black;
+    padding: 5px;
+    border-radius: 8px;
+    background: var(--td_tab1);
+}
+
+#credito_box select {
+    height: 30px;
+    width: 150px;
+    border: 1px solid black;
+    padding: 5px;
+    border-radius: 8px;
+    background: var(--td_tab1);
+}
 
 .btn_m {
     position: relative;
@@ -442,5 +490,6 @@
     .cont_compra {
         height: 400px;
     }
+
 
 }

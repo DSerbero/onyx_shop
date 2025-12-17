@@ -235,6 +235,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
 
 
             document.getElementById("cerrar_modal").addEventListener("click", () => {
+                confirm("Deseas guardar los cambios?");
                 if (window.clienteSeleccionado) {
                     document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
                 }
@@ -244,10 +245,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
     </body>
 
     </html>
-    <?php
-    ?>
-
 <?php
 } else {
-    header("Location: login");
+    header("Location: cerrar");
 }

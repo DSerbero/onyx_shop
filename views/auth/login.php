@@ -11,7 +11,7 @@ if (!isset($_SESSION["cargo"])){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Log In</title>
     <link rel="stylesheet" href="assets/styles/style.css">
     
 </head>

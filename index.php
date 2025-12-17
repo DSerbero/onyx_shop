@@ -1,10 +1,10 @@
 <?php
 include "controllers/session.php";
 
-if ($_SESSION["cargo"] === "admin" || $_SESSION["cargo"] === "code") {
+if (!in_array($_SESSION["cargo"], ["gerente", "admin", "code"])) {
     header("Location: venta")
 ?>
-    <a href="controllers/unlog.php">Cerrar</a>
+
     
 <?php
 ?>

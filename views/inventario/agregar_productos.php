@@ -108,6 +108,8 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
 
 <?php
 
+} else {
+    header("Location: login");
 }
 
 ?>

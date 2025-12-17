@@ -45,11 +45,12 @@ if (!empty($_POST['id_cliente'])) {
 
     if ($stmt_cli->execute()) {
 
-        $stmt = $conn->prepare("INSERT INTO ventas(id_cliente, productos, tipo_pago) VALUES(?,?,?)");
+        $stmt = $conn->prepare("INSERT INTO ventas(id_cliente, productos, tipo_pago, estado) VALUES(?,?,?,?)");
 
         $stmt->bindParam(1, $cliente);
         $stmt->bindParam(2, $productos);
         $stmt->bindParam(3, $pago);
+        $stmt->bindParam(4, $estado);
 
         $cliente = $id_cliente;
 
@@ -58,7 +59,7 @@ if (!empty($_POST['id_cliente'])) {
 
         $info_pago = json_decode($_POST['pago_info'], true);
         $pago = json_encode($info_pago, JSON_UNESCAPED_UNICODE);
-
+        $estado = (in_array("credito", $info_pago["metodos"])) ? "pendiente" : "pago";
         if ($stmt->execute()) {
 
             foreach ($productos_recibidos as $i) {
@@ -82,7 +83,7 @@ if (!empty($_POST['id_cliente'])) {
     }
 } else {
 
-    $stmtcli = $conn->prepare("INSERT INTO clientes(documento, nombre, direccion, telefono, correo, ref1, ref2)
+    $stmtcli = $conn->prepare("INSERT INTO clientes(documento, nombre, direccion, telefono, correo, referencia1, referencia2)
                                 VALUES (?,?,?,?,?,?,?)");
 
     $stmtcli->bindParam(1, $documento);
@@ -111,11 +112,13 @@ if (!empty($_POST['id_cliente'])) {
 
         if ($id = $stmt_id_cli->fetch(PDO::FETCH_ASSOC)) {
 
-            $stmt = $conn->prepare("INSERT INTO ventas(id_cliente, productos, tipo_pago) VALUES(?,?,?)");
+            $stmt = $conn->prepare("INSERT INTO ventas(id_cliente, productos, tipo_pago, estado) VALUES(?,?,?,?)");
 
             $stmt->bindParam(1, $cliente);
             $stmt->bindParam(2, $productos);
             $stmt->bindParam(3, $pago);
+            $stmt->bindParam(4, $estado);
+
 
             $cliente = $id['id_cliente'];
             $productos_recibidos = json_decode($_POST['productos_enviados'], true);
@@ -123,6 +126,7 @@ if (!empty($_POST['id_cliente'])) {
 
             $info_pago = json_decode($_POST['pago_info'], true);
             $pago = json_encode($info_pago, JSON_UNESCAPED_UNICODE);
+            $estado = (in_array("credito", $info_pago["metodos"])) ? "pendiente" : "pago";
 
             if ($stmt->execute()) {
 

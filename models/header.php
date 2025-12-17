@@ -17,6 +17,7 @@ include "../../controllers/getSession.php";
                 <li><a href="clientes">Ver clientes</a></li>
                 <li><a href="reportes">Cuadre de caja</a></li>
                 <li><a href="historial">Historial de ventas</a></li>
+                <li><a href="cerrar">Cerrar Sesion</a></li>
 
             </ul>
         </div>

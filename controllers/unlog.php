@@ -3,4 +3,4 @@
 session_start();
 session_destroy();
 
-header("Location: ../inicio");
+header("Location: login");

@@ -18,6 +18,7 @@ $hasta = fixDate($_POST["hasta"] ?? null, true);
 
 
 $resumen = [
+    "ventas" => 0,
     "efectivo" => 0,
     "transferencia" => 0,
     "credito" => 0,
@@ -36,6 +37,8 @@ $stmt = $conn->prepare("
 $stmt->execute([$desde, $hasta]);
 
 $ventas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$resumen["ventas"] = $stmt->rowCount();
 
 foreach ($ventas as $v) {
 
@@ -105,9 +108,9 @@ foreach ($abonos as $ab) {
     $det      = $pago["detalles"];
 
     if ($metodos === ["efectivo"]) {
-        $resumen["abonos"]['efectivo'] += $det["pago"];
+        $resumen["abonos"]['efectivo'] += $det["efectivo"];
     } else if ($metodos === ["transferencia"]) {
-        $resumen['abonos']["transferencia"] += $det["pago"];
+        $resumen['abonos']["transferencia"] += $det["transferencia"];
     } else if ($metodos === ["efectivo", "transferencia"]) {
         $resumen['abonos']["efectivo"]      += $det["efectivo"];
         $resumen['abonos']["transferencia"] += $det["transferencia"];

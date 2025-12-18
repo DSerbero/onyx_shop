@@ -24,6 +24,38 @@ function getCliente($id_cliente)
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+function obtenerProductosVenta($productosJson)
+{
+    if (empty($productosJson)) {
+        return [];
+    }
+
+    $productos = json_decode($productosJson, true);
+    if (!is_array($productos)) {
+        return [];
+    }
+
+    $conn = connect();
+
+    $resultado = [];
+
+    foreach ($productos as $p) {
+        if (!isset($p["codigo"], $p["cantidad"])) continue;
+
+        $stmt = $conn->prepare("SELECT nombre FROM productos WHERE codigo = ?");
+        $stmt->execute([$p["codigo"]]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $resultado[] = [
+            "nombre" => $row["nombre"] ?? "Producto no encontrado",
+            "cantidad" => (int)$p["cantidad"]
+        ];
+    }
+
+    return $resultado;
+}
+
+
 /* MÉTODO DE PAGO (fila 1) */
 function obtenerMetodoPago(array $venta): string
 {
@@ -178,6 +210,7 @@ function obtenerTotalVenta(array $venta): string
                         <th># - Venta</th>
                         <th>Fecha</th>
                         <th>Cliente</th>
+                        <th>Productos</th>
                         <th>Método</th>
                         <th>Detalle</th>
                         <th>Total</th>
@@ -191,22 +224,25 @@ function obtenerTotalVenta(array $venta): string
                         $venta = json_decode($v["tipo_pago"], true) ?? [];
                         $idVenta = $v["id_venta"];
                         $abonosVenta = $abonosPorVenta[$idVenta] ?? [];
+                        $productosVenta = obtenerProductosVenta($v["productos"]);
                     ?>
                         <tr>
                             <td><?= $v["id_venta"] ?></td>
                             <td><?= fechaCortaHora($v["fecha_venta"]) ?></td>
-
                             <td><?= getCliente($v["id_cliente"])["nombre"] ?? "—" ?></td>
-
+                            <td>
+                                <?php if (!empty($productosVenta)): ?>
+                                    <?php foreach ($productosVenta as $p): ?>
+                                        <?= $p["nombre"] ?> x<?= $p["cantidad"] ?><br>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    —
+                                <?php endif; ?>
+                            </td>
                             <td><?= obtenerMetodoPago($venta) ?></td>
-
                             <td><?= obtenerDetallePago($venta, $abonosVenta) ?></td>
-
-
                             <td><?= obtenerTotalVenta($venta) ?></td>
-
                             <td><?= ucfirst($v["estado"]) ?></td>
-
                             <td>
                                 <?php if (!empty($abonosVenta)): ?>
                                     <details>
@@ -267,17 +303,22 @@ function obtenerTotalVenta(array $venta): string
                 </tbody>
             </table>
             <div class="acciones-tabla">
-                <form method="POST"
-                    action="exportar_ventas_pdf.php"
+                <form method="GET"
+                    action="views/ventas/exportar_ventas_pdf.php"
                     target="_blank">
 
-                    <input type="hidden" name="filtros" id="filtrosPDF">
+                    <input type="hidden" name="cliente" value="<?= $_GET["cliente"] ?? "" ?>">
+                    <input type="hidden" name="estado" value="<?= $_GET["estado"] ?? "" ?>">
+                    <input type="hidden" name="metodo" value="<?= $_GET["metodo"] ?? "" ?>">
+                    <input type="hidden" name="desde" value="<?= $_GET["desde"] ?? "" ?>">
+                    <input type="hidden" name="hasta" value="<?= $_GET["hasta"] ?? "" ?>">
 
                     <button type="submit" class="btn-pdf">
                         Exportar a PDF
                     </button>
                 </form>
             </div>
+
 
         </div>
 
@@ -338,14 +379,36 @@ function obtenerTotalVenta(array $venta): string
     </div>
     <div id="modalFecha" class="modal hidden">
         <div class="modal-content">
-            <h2>Seleccionar filtros</h2>
+            <h2>Filtrar por fecha</h2>
+            <div class="presets-fecha">
+                <button type="button" data-preset="hoy">Hoy</button>
+                <button type="button" data-preset="ayer">Ayer</button>
+                <button type="button" data-preset="semana">Esta semana</button>
+                <button type="button" data-preset="mes">Este mes</button>
+                <button type="button" data-preset="7dias">Últimos 7 días</button>
+                <button type="button" data-preset="30dias">Últimos 30 días</button>
+            </div>
 
-            <form id="formFiltros">
+            <form id="formFecha">
+                <label>
+                    Desde
+                    <input type="datetime-local" name="desde" required>
+                </label>
 
-                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto cupiditate explicabo ullam voluptatibus. Numquam autem sed perferendis incidunt quod necessitatibus quam et vel eveniet accusantium harum officiis beatae, veritatis unde.</p>
+                <label>
+                    Hasta
+                    <input type="datetime-local" name="hasta" required>
+                </label>
+
+                <div style="margin-top:10px">
+                    <button type="submit">Aplicar</button>
+                    <button type="button" id="cancelarFecha">Cancelar</button>
+                </div>
             </form>
         </div>
     </div>
+
+
     <div id="toast-container"></div>
     <script src="assets/js/menu.js"></script>
     <script>
@@ -513,8 +576,6 @@ function obtenerTotalVenta(array $venta): string
             });
 
             window.location.search = params.toString();
-            document.getElementById("filtrosPDF").value =
-                JSON.stringify(Object.fromEntries(params));
 
         }
     </script>
@@ -621,6 +682,20 @@ function obtenerTotalVenta(array $venta): string
         `;
                 chkEstado.checked = true;
             }
+            /* FECHA */
+            if (filtrosPersistidos.desde && filtrosPersistidos.hasta) {
+                filtrosActivos.innerHTML += `
+        <div class="filtro-activo" data-filtro="fecha">
+            <input type="hidden" name="desde" value="${filtrosPersistidos.desde}">
+            <input type="hidden" name="hasta" value="${filtrosPersistidos.hasta}">
+
+            <button type="button" id="select-fecha">Cambiar</button>
+            <button type="button" class="btn-remove">✕</button>
+        </div>
+    `;
+                chkFecha.checked = true;
+            }
+
 
         });
     </script>
@@ -654,13 +729,126 @@ function obtenerTotalVenta(array $venta): string
         const filtrosPersistidos = <?= json_encode($_GET) ?>;
     </script>
     <script>
-        const modalFecha = document.getElementById("modalFecha");
-        let btnSelFe = document.getElementById("select-fecha");
-        btnSelFe.addEventListener('click', () => {
-            modalFecha.classList.remove("hidden");
-
+        document.addEventListener("click", e => {
+            if (e.target.id === "select-fecha") {
+                modalFecha.classList.remove("hidden");
+            }
         });
     </script>
+    <script>
+        document.getElementById("cancelarFecha").addEventListener("click", () => {
+            modalFecha.classList.add("hidden");
+        });
+
+        modalFecha.addEventListener("click", e => {
+            if (e.target === modalFecha) {
+                modalFecha.classList.add("hidden");
+            }
+        });
+    </script>
+    <script>
+        document.getElementById("formFecha").addEventListener("submit", e => {
+            e.preventDefault();
+
+            const desde = e.target.desde.value;
+            const hasta = e.target.hasta.value;
+
+            if (!desde || !hasta) return;
+
+            const filtroFecha = document.querySelector(".filtro-activo[data-filtro='fecha']");
+
+            filtroFecha.innerHTML = `
+        <span>Fecha</span>
+
+        <input type="hidden" name="desde" value="${desde}">
+        <input type="hidden" name="hasta" value="${hasta}">
+
+        <span class="rango-fecha">
+            ${desde.replace("T"," ")} → ${hasta.replace("T"," ")}
+        </span>
+
+        <button type="button" id="select-fecha">Cambiar</button>
+        <button type="button" class="btn-remove">✕</button>
+    `;
+
+            modalFecha.classList.add("hidden");
+            aplicarFiltros();
+        });
+    </script>
+    <script>
+        function formatoDatetimeLocal(date) {
+            const pad = n => n.toString().padStart(2, "0");
+            return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        document.querySelectorAll("[data-preset]").forEach(btn => {
+            btn.addEventListener("click", () => {
+
+                const preset = btn.dataset.preset;
+                const ahora = new Date();
+
+                let desde, hasta;
+
+                switch (preset) {
+
+                    case "hoy":
+                        desde = new Date();
+                        desde.setHours(0, 0, 0, 0);
+                        hasta = new Date();
+                        hasta.setHours(23, 59, 59, 999);
+                        break;
+
+                    case "ayer":
+                        desde = new Date();
+                        desde.setDate(desde.getDate() - 1);
+                        desde.setHours(0, 0, 0, 0);
+
+                        hasta = new Date(desde);
+                        hasta.setHours(23, 59, 59, 999);
+                        break;
+
+                    case "semana":
+                        desde = new Date();
+                        desde.setDate(desde.getDate() - desde.getDay());
+                        desde.setHours(0, 0, 0, 0);
+
+                        hasta = new Date();
+                        hasta.setHours(23, 59, 59, 999);
+                        break;
+
+                    case "mes":
+                        desde = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+                        desde.setHours(0, 0, 0, 0);
+
+                        hasta = new Date();
+                        hasta.setHours(23, 59, 59, 999);
+                        break;
+
+                    case "7dias":
+                        desde = new Date();
+                        desde.setDate(desde.getDate() - 7);
+                        desde.setHours(0, 0, 0, 0);
+
+                        hasta = new Date();
+                        break;
+
+                    case "30dias":
+                        desde = new Date();
+                        desde.setDate(desde.getDate() - 30);
+                        desde.setHours(0, 0, 0, 0);
+
+                        hasta = new Date();
+                        break;
+                }
+
+                document.querySelector("#formFecha [name='desde']").value = formatoDatetimeLocal(desde);
+                document.querySelector("#formFecha [name='hasta']").value = formatoDatetimeLocal(hasta);
+            });
+        });
+    </script>
+
+
+
 </body>
 
 </html>

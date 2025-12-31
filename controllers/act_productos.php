@@ -5,19 +5,21 @@ $conn = connect();
 
 
 if (isset($_POST["act"])) {
-    $stmt = $conn->prepare("UPDATE productos SET nombre=?, categoria=?, tipo_de_producto=?, costo=?, venta=? WHERE id_producto=?");
+    $stmt = $conn->prepare("UPDATE productos SET nombre=?, categoria=?, tipo_de_producto=?, costo=?, venta=?, cantidad_minima=? WHERE id_producto=?");
     $stmt->bindParam(1, $nombre);
     $stmt->bindParam(2, $categoria);
     $stmt->bindParam(3, $tipo_de_producto);
     $stmt->bindParam(4, $costo);
     $stmt->bindParam(5, $venta);
-    $stmt->bindParam(6, $id_producto);
+    $stmt->bindParam(6, $cantidadMin);
+    $stmt->bindParam(7, $id_producto);
 
     $nombre = $_POST["nombre"];
     $categoria = $_POST["categoria"];
     $tipo_de_producto = $_POST["tipo"];
     $costo = intval($_POST["costo"]);
     $venta = intval($_POST["venta"]);
+    $cantidadMin = intval($_POST['add_min']);
     $id_producto = intval($_POST["edit_id"]);
 
     $stmt->execute();
@@ -30,12 +32,10 @@ if (isset($_POST['add'])) {
 
     $id = intval($_POST['add_id']);
     $cantidadAdd = intval($_POST['add_cantidad']);
-    $cantidadMin = intval($_POST['add_min']);
 
-    $stmt = $conn->prepare("UPDATE productos SET cantidad = cantidad + ?, cantidad_minima = ? WHERE id_producto = ?");
+    $stmt = $conn->prepare("UPDATE productos SET cantidad = cantidad + ? WHERE id_producto = ?");
     $stmt->bindParam(1, $cantidadAdd);
-    $stmt->bindParam(2, $cantidadMin);
-    $stmt->bindParam(3, $id);
+    $stmt->bindParam(2, $id);
 
     if ($stmt->execute()) {
         $stmt_act = $conn->prepare("INSERT INTO compras (id_producto, cantidad) VALUES (?,?);");

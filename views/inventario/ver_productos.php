@@ -50,10 +50,12 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                                 <td><?= $producto["tipo_de_producto"] ?></td>
                                 <td><?= $producto["costo"] ?></td>
                                 <td><?= $producto["venta"] ?></td>
-                                <td class="cantidad" <?php if($producto["cantidad"] < $producto['cantidad_minima']){echo "style='background: #ff000055;'";} ?> ><?= $producto["cantidad"] ?></td>
+                                <td class="cantidad" <?php if ($producto["cantidad"] < $producto['cantidad_minima']) {
+                                                            echo "style='background: #ff000055;'";
+                                                        } ?>><?= $producto["cantidad"] ?></td>
                                 <td>
-                                    <button class="btn-editar" data-id="<?= $producto['id_producto'] ?>"><img src="assets/img/editar.ico" alt=""></button>
-                                    <button class="btn-add" data-id="<?= $producto['id_producto'] ?>" data-min="<?= $producto['cantidad_minima'] ?>"><img src="assets/img/add.png" alt=""></button>
+                                    <button class="btn-editar" data-id="<?= $producto['id_producto'] ?>" data-min="<?= $producto['cantidad_minima'] ?>"><img src="assets/img/editar.ico" alt=""></button>
+                                    <button class="btn-add" data-id="<?= $producto['id_producto'] ?>"><img src="assets/img/add.png" alt=""></button>
                                     <button class="btn-delete" data-id="<?= $producto['id_producto'] ?>"><img src="assets/img/delete.png" alt="Eliminar"></button>
                                 </td>
                             </tr>
@@ -116,6 +118,10 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                             <th><label for="edit_venta">Precio de venta</label></th>
                             <td><input type="number" id="edit_venta" name="venta" required></td>
                         </tr>
+                        <tr>
+                            <th><label for="add_min">Cantidad mínima</label></th>
+                            <td><input type="number" id="add_min" name="add_min" min="1"></td>
+                        </tr>
                     </table>
                     <input type="submit" value="Guardar cambios" name="act">
                 </form>
@@ -136,10 +142,6 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                         <tr>
                             <th><label for="add_cantidad">Cantidad a agregar</label></th>
                             <td><input type="number" id="add_cantidad" name="add_cantidad" required min="1"></td>
-                        </tr>
-                        <tr>
-                            <th><label for="add_min">Cantidad mínima</label></th>
-                            <td><input type="number" id="add_min" name="add_min" min="1"></td>
                         </tr>
                     </table>
                     <input type="submit" value="Agregar" name="add">
@@ -223,13 +225,14 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                     document.getElementById("edit_tipo").value = fila[3].innerText.toLowerCase();
                     document.getElementById("edit_costo").value = fila[4].innerText;
                     document.getElementById("edit_venta").value = fila[5].innerText;
+                    document.getElementById("add_min").value = btn.dataset.min;
+
 
                     modalEditar.style.display = "flex";
                 }
 
                 if (btn.classList.contains("btn-add")) {
                     document.getElementById("add_id").value = btn.dataset.id;
-                    document.getElementById("add_min").value = btn.dataset.min;
                     modalAdd.dataset.row = btn.closest("tr").rowIndex;
 
                     modalAdd.style.display = "flex";

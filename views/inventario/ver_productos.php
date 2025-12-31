@@ -7,7 +7,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
 ?>
 
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="es">
 
     <head>
         <meta charset="UTF-8">
@@ -16,6 +16,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
         <link rel="stylesheet" href="assets/styles/gen_style.css">
         <link rel="stylesheet" href="assets/styles/header_style.css">
         <link rel="stylesheet" href="assets/styles/productos.css">
+        <link rel="icon" href="assets/img/width_800.ico">
         <style>
         </style>
     </head>
@@ -49,7 +50,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                                 <td><?= $producto["tipo_de_producto"] ?></td>
                                 <td><?= $producto["costo"] ?></td>
                                 <td><?= $producto["venta"] ?></td>
-                                <td class="cantidad"><?= $producto["cantidad"] ?></td>
+                                <td class="cantidad" <?php if($producto["cantidad"] < $producto['cantidad_minima']){echo "style='background: #ff000055;'";} ?> ><?= $producto["cantidad"] ?></td>
                                 <td>
                                     <button class="btn-editar" data-id="<?= $producto['id_producto'] ?>"><img src="assets/img/editar.ico" alt=""></button>
                                     <button class="btn-add" data-id="<?= $producto['id_producto'] ?>" data-min="<?= $producto['cantidad_minima'] ?>"><img src="assets/img/add.png" alt=""></button>
@@ -413,5 +414,5 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
 <?php
 
 } else {
-    header("Location: login");
+    header("Location: cerrar");
 }

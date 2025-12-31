@@ -31,6 +31,27 @@
 }
 
 
+.item_busqueda {
+    position: relative;
+    padding-right: 90px; /* espacio para el badge */
+    cursor: pointer;
+}
+
+.item_busqueda.sin_stock::after {
+    content: "SIN STOCK";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #d32f2f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
 .cont_compra {
     background: var(--bgtab);
     padding: 20px;
@@ -198,11 +219,11 @@
     gap: 8px;
 }
 
-#modal_nuevo_cliente .modal_contenido{
+#modal_nuevo_cliente .modal_contenido {
     width: 800px;
 }
 
-.modal_contenido .tablas{
+.modal_contenido .tablas {
     display: flex;
 }
 
@@ -241,6 +262,16 @@
     appearance: none;
 }
 
+.modal_contenido textarea {
+    padding: 8px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: end;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
 .btn_cerrar,
 .btn_guardar,
 .cerrar_modal_cliente {
@@ -259,6 +290,24 @@
 .btn_cerrar:hover,
 .btn_guardar:hover,
 .cerrar_modal_cliente:hover {
+    background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
+
+}
+
+.btn_mo {
+    margin-top: 10px;
+    padding: 10px;
+    background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.btn_mo:hover {
     background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
 
 }

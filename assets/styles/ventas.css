@@ -21,18 +21,147 @@ section {
     padding: 8px;
 }
 
-.filtros-barra{
+.filtros-barra {
     display: flex;
     flex-direction: row;
     width: 80%;
     justify-content: end;
     gap: 5px;
     padding: 10px 0;
+    align-items: center;
 }
 
-#filtrosActivos{
+.metodos_sel {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#formMetodo {
+    display: flex;
+    flex-direction: column;
+
+}
+
+#formMetodo .btn {
+    width: 100px;
+}
+
+#filtrosActivos {
     display: flex;
     flex-direction: row;
+    align-items: center;
+}
+
+#formFiltros {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#formFiltros .btn {
+    width: 120px;
+    height: 30px;
+}
+
+.filtro-activo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
+
+.btn_f {
+    position: relative;
+    width: 150px;
+    height: 24px;
+    margin: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn_f::before {
+    content: attr(data-label);
+    position: absolute;
+    margin-left: -82px;
+    width: 150px;
+    padding: 5px;
+    border-radius: 8px;
+    background: linear-gradient(160deg, var(--deg_btn2) 5%, var(--deg_btn1));
+}
+
+.btn_f:checked::before {
+    position: absolute;
+    margin-left: -82px;
+    width: 150px;
+    padding: 5px;
+    border-radius: 8px;
+    background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
+}
+
+
+.btn-remove {
+    background: rgba(0, 0, 0, 0);
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+input[name="cliente"] {
+    width: 150px;
+    height: 25px;
+}
+
+select {
+    width: 150px;
+    background: var(--td_tab2);
+    border: none;
+    border-radius: 5px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+select,
+::picker(select) {
+    appearance: base-select;
+}
+
+select::picker-icon {
+    color: #999999;
+    transition: 0.4s rotate;
+}
+
+select:open::picker-icon {
+    rotate: 180deg;
+}
+
+::picker(select) {
+    border: none;
+}
+
+option {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    border: 2px solid var(--td_tab1);
+    background: var(--td_tab2);
+    padding: 10px;
+    transition: 0.4s;
+}
+
+option:hover,
+option:focus {
+    background: var(--th_tab);
+}
+
+option:checked {
+    font-weight: bold;
 }
 
 .abonos {
@@ -109,7 +238,14 @@ section {
 #formAbono {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+}
+
+.metodos{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 #formAbono label {
@@ -140,41 +276,17 @@ section {
     transform: scale(1.1);
 }
 
-/* =======================
-   BOTONES
-======================= */
-
-#formAbono button {
-    margin-top: 10px;
-    padding: 8px;
-    border: none;
-    border-radius: 4px;
-    background: #2e7d32;
-    color: #fff;
-    font-size: .95rem;
-    cursor: pointer;
-}
-
-#formAbono button:hover {
-    background: #256628;
-}
-
-/* =======================
-   BOTÓN CREAR ABONO
-======================= */
-
-.btn-abono {
-    margin-top: 10px;
+.btn {
     padding: 6px 10px;
     font-size: .85rem;
     background: linear-gradient(to right, var(--deg_btn2), var(--deg_btn1));
-    color: #fff;
+    color: #000;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.btn-abono:hover {
+.btn:hover {
     background: linear-gradient(160deg, var(--deg_btn_h1) 5%, var(--deg_btn_h2));
 }
 
@@ -242,4 +354,96 @@ section {
         opacity: 0;
         transform: translateX(20px);
     }
+}
+
+
+table {
+    width: 1000px;
+}
+
+table,
+table tr,
+table th,
+table td {
+    border: 4px solid #ffffff;
+    border-collapse: collapse;
+}
+
+table thead tr {
+    background: var(--th_tab);
+    height: 50px;
+}
+
+table td {
+    background: var(--td_tab2);
+    height: 50px;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+table td:nth-child(1) {
+    background: var(--td_tab1);
+    font-weight: bold;
+}
+
+
+.acciones-tabla {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 10px;
+}
+
+.presets-fecha {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+#modalFecha form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Labels */
+#modalFecha label {
+    font-weight: bold;
+    font-size: 16px;
+    color: var(--deg2);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Inputs */
+#modalFecha input[type="datetime-local"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--td_tab1);
+    background: var(--td_tab2);
+}
+
+/* Botones inferiores */
+#modalFecha form>div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#modalFecha button[type="submit"],
+#modalFecha #cancelarFecha {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+    background: linear-gradient(160deg,
+            var(--deg_btn2) 5%,
+            var(--deg_btn1));
 }

@@ -38,7 +38,13 @@ if (isset($_POST['add'])) {
     $stmt->bindParam(3, $id);
 
     if ($stmt->execute()) {
-        echo json_encode(["status" => "success"]);
+        $stmt_act = $conn->prepare("INSERT INTO compras (id_producto, cantidad) VALUES (?,?);");
+        if ($stmt_act->execute([$id, $cantidadAdd])) {
+
+            echo json_encode(["status" => "success"]);
+        } else {
+            echo json_encode(["status" => "error"]);
+        }
     } else {
         echo json_encode(["status" => "error"]);
     }
@@ -55,7 +61,10 @@ if (isset($_POST['delete_id'])) {
     $stmt->bindParam(1, $id);
 
     if ($stmt->execute()) {
-        echo json_encode(['status' => 'success']);
+        $stmt_cam = $conn->prepare("DELETE FROM compras WHERE id_producto = ?");
+        if ($stmt_cam->execute([$id])) {
+            echo json_encode(['status' => 'success']);
+        }
     } else {
         echo json_encode(['status' => 'error']);
     }

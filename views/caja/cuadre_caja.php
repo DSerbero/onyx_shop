@@ -14,6 +14,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
         <link rel="stylesheet" href="assets/styles/gen_style.css">
         <link rel="stylesheet" href="assets/styles/header_style.css">
         <link rel="stylesheet" href="assets/styles/caja.css">
+        <link rel="icon" href="assets/img/width_800.ico">
     </head>
 
     <body>
@@ -145,5 +146,5 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
 <?php
 
 } else {
-    header("Location: login");
+    header("Location: cerrar");
 }

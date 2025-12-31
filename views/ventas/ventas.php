@@ -3,13 +3,10 @@ include "../../controllers/session.php";
 include "../../controllers/ventas.php";
 
 if (!in_array($_SESSION["cargo"], ["gerente", "admin", "code"])) {
-    header("Location: login");
+    header("Location: cerrar");
     exit;
 }
 
-/* =======================
-   FUNCIONES AUXILIARES
-======================= */
 
 function fechaCortaHora(string $fecha): string
 {
@@ -56,7 +53,6 @@ function obtenerProductosVenta($productosJson)
 }
 
 
-/* MÉTODO DE PAGO (fila 1) */
 function obtenerMetodoPago(array $venta): string
 {
     $d = $venta["detalles"] ?? [];
@@ -72,7 +68,6 @@ function obtenerMetodoPago(array $venta): string
     return ucfirst($d["tipo"]);
 }
 
-/* DETALLE (fila 2) */
 function obtenerDetallePago(array $venta, array $abonosVenta = []): string
 {
     $d = $venta["detalles"] ?? [];
@@ -103,7 +98,6 @@ function obtenerDetallePago(array $venta, array $abonosVenta = []): string
 
         case "credito":
 
-            /* ===== ABONO INICIAL ===== */
             if (!empty($d["abono"])) {
 
                 $abonoEfectivo = (int)($d["monto_efectivo"] ?? 0);
@@ -125,13 +119,11 @@ function obtenerDetallePago(array $venta, array $abonosVenta = []): string
                 }
             }
 
-            /* ===== SALDO A CRÉDITO ===== */
             if (!empty($d["saldo"])) {
                 $html[] = "Crédito: $" .
                     number_format($d["saldo"], 0, ',', '.');
             }
 
-            /* ===== SALDO PENDIENTE ===== */
             $totalAbonos = 0;
 
             foreach ($abonosVenta as $a) {
@@ -164,7 +156,6 @@ function obtenerDetallePago(array $venta, array $abonosVenta = []): string
 
 
 
-/* TOTAL (fila 3) */
 function obtenerTotalVenta(array $venta): string
 {
     $d = $venta["detalles"] ?? [];
@@ -185,6 +176,7 @@ function obtenerTotalVenta(array $venta): string
     <link rel="stylesheet" href="assets/styles/gen_style.css">
     <link rel="stylesheet" href="assets/styles/header_style.css">
     <link rel="stylesheet" href="assets/styles/ventas.css">
+    <link rel="icon" href="assets/img/width_800.ico">
 </head>
 
 <body>
@@ -198,9 +190,9 @@ function obtenerTotalVenta(array $venta): string
     <section>
 
         <div class="filtros-barra">
-            <button id="btnFiltros">Seleccionar filtro</button>
+            <button id="btnFiltros" class="btn">Seleccionar filtro</button>
             <div id="filtrosActivos"></div>
-            <button id="filtar">Filtrar</button>
+            <button id="filtar" class="btn">Filtrar</button>
         </div>
 
         <div class="tabla-wrapper">
@@ -210,12 +202,9 @@ function obtenerTotalVenta(array $venta): string
                         <th># - Venta</th>
                         <th>Fecha</th>
                         <th>Cliente</th>
-                        <th>Productos</th>
                         <th>Método</th>
-                        <th>Detalle</th>
                         <th>Total</th>
                         <th>Estado</th>
-                        <th>Abonos</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -230,50 +219,16 @@ function obtenerTotalVenta(array $venta): string
                             <td><?= $v["id_venta"] ?></td>
                             <td><?= fechaCortaHora($v["fecha_venta"]) ?></td>
                             <td><?= getCliente($v["id_cliente"])["nombre"] ?? "—" ?></td>
-                            <td>
-                                <?php if (!empty($productosVenta)): ?>
-                                    <?php foreach ($productosVenta as $p): ?>
-                                        <?= $p["nombre"] ?> x<?= $p["cantidad"] ?><br>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    —
-                                <?php endif; ?>
-                            </td>
-                            <td><?= obtenerMetodoPago($venta) ?></td>
-                            <td><?= obtenerDetallePago($venta, $abonosVenta) ?></td>
+
+                            <td <?php if (obtenerMetodoPago($venta) === "Credito") {
+                                    echo 'style="background: #ff000055;"';
+                                } ?>><?= obtenerMetodoPago($venta) ?></td>
                             <td><?= obtenerTotalVenta($venta) ?></td>
                             <td><?= ucfirst($v["estado"]) ?></td>
-                            <td>
-                                <?php if (!empty($abonosVenta)): ?>
-                                    <details>
-                                        <summary>Ver</summary>
-                                        <ul>
-                                            <?php foreach ($abonosVenta as $a):
-                                                $pagoAbono = json_decode($a["tipo_pago"], true)["detalles"] ?? [];
-                                            ?>
-                                                <li>
-                                                    <?= date("d/m/Y", strtotime($a["fecha_abono"])) ?>
-                                                    <ul>
-                                                        <?php foreach ($pagoAbono as $metodo => $monto): ?>
-                                                            <li>
-                                                                <?= ucfirst($metodo) ?>:
-                                                                <b>$<?= number_format($monto, 0, ',', '.') ?></b>
-                                                            </li>
-                                                        <?php endforeach; ?>
-                                                    </ul>
-                                                </li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    </details>
-                                <?php else: ?>
-                                    —
-                                <?php endif; ?>
-                            </td>
                             <td>
                                 <?php
                                 $tieneCredito = ($venta["detalles"]["tipo"] ?? "") === "credito";
 
-                                // calcular saldo pendiente
                                 $saldoInicial = (int)($venta["detalles"]["saldo"] ?? 0);
 
                                 $totalAbonos = 0;
@@ -289,14 +244,23 @@ function obtenerTotalVenta(array $venta): string
 
                                 <?php if ($tieneCredito && $saldoPendiente > 0): ?>
                                     <button
-                                        class="btn-abono"
+                                        class="btn-abono btn"
                                         data-venta="<?= $idVenta ?>"
                                         data-saldo="<?= $saldoPendiente ?>">
                                         Crear abono
                                     </button>
-                                <?php else: ?>
-                                    —
                                 <?php endif; ?>
+                                <button
+                                    class="btn btn-detalles"
+                                    data-id="<?= $v['id_venta'] ?>"
+                                    data-fecha="<?= fechaCortaHora($v["fecha_venta"]) ?>"
+                                    data-cliente="<?= getCliente($v["id_cliente"])["nombre"] ?? "—" ?>"
+                                    data-productos='<?= json_encode($productosVenta) ?>'
+                                    data-detalle='<?= htmlspecialchars(obtenerDetallePago($venta, $abonosVenta)) ?>'
+                                    data-abonos='<?= json_encode($abonosVenta) ?>'>
+                                    Ver detalles
+                                </button>
+
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -309,11 +273,16 @@ function obtenerTotalVenta(array $venta): string
 
                     <input type="hidden" name="cliente" value="<?= $_GET["cliente"] ?? "" ?>">
                     <input type="hidden" name="estado" value="<?= $_GET["estado"] ?? "" ?>">
-                    <input type="hidden" name="metodo" value="<?= $_GET["metodo"] ?? "" ?>">
+                    <?php if (!empty($_GET["metodo"]) && is_array($_GET["metodo"])): ?>
+                        <?php foreach ($_GET["metodo"] as $m): ?>
+                            <input type="hidden" name="metodo[]" value="<?= htmlspecialchars($m) ?>">
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+
                     <input type="hidden" name="desde" value="<?= $_GET["desde"] ?? "" ?>">
                     <input type="hidden" name="hasta" value="<?= $_GET["hasta"] ?? "" ?>">
 
-                    <button type="submit" class="btn-pdf">
+                    <button type="submit" class="btn-pdf btn">
                         Exportar a PDF
                     </button>
                 </form>
@@ -331,19 +300,19 @@ function obtenerTotalVenta(array $venta): string
                 <input type="hidden" name="id_venta" id="abono_id_venta">
                 <input type="hidden" id="abono_saldo">
 
-                <label>
-                    <input type="checkbox" id="chkEfectivo" value="efectivo">
-                    Efectivo
-                </label>
+                <div class="metodos">
+                    <label>
+                        <input type="checkbox" id="chkEfectivo" value="efectivo" class="btn_f" data-label="Efectivo">
+                    </label>
 
-                <label>
-                    <input type="checkbox" id="chkTransferencia" value="transferencia">
-                    Transferencia
-                </label>
+                    <label>
+                        <input type="checkbox" id="chkTransferencia" value="transferencia" class="btn_f" data-label="Transferencia">
+                    </label>
+                </div>
 
                 <div id="inputsMontos"></div>
 
-                <button type="submit">Guardar</button>
+                <button type="submit" class="btn" style="margin-top: 10px;">Guardar</button>
             </form>
         </div>
     </div>
@@ -354,26 +323,22 @@ function obtenerTotalVenta(array $venta): string
             <form id="formFiltros">
 
                 <label>
-                    <input type="checkbox" id="filtroFecha">
-                    Fecha
+                    <input type="checkbox" id="filtroFecha" class="btn_f" data-label="fecha">
                 </label>
 
                 <label>
-                    <input type="checkbox" id="filtroCliente">
-                    Cliente
+                    <input type="checkbox" id="filtroCliente" class="btn_f" data-label="Cliente">
                 </label>
 
                 <label>
-                    <input type="checkbox" id="filtroEstado">
-                    Estado
+                    <input type="checkbox" id="filtroEstado" class="btn_f" data-label="Estado">
                 </label>
 
                 <label>
-                    <input type="checkbox" id="filtroMetodo">
-                    Método de pago
+                    <input type="checkbox" id="filtroMetodo" class="btn_f" data-label="Metodo de pago">
                 </label>
 
-                <button type="submit">Aplicar</button>
+                <button type="submit" class="btn">Aplicar</button>
             </form>
         </div>
     </div>
@@ -381,12 +346,12 @@ function obtenerTotalVenta(array $venta): string
         <div class="modal-content">
             <h2>Filtrar por fecha</h2>
             <div class="presets-fecha">
-                <button type="button" data-preset="hoy">Hoy</button>
-                <button type="button" data-preset="ayer">Ayer</button>
-                <button type="button" data-preset="semana">Esta semana</button>
-                <button type="button" data-preset="mes">Este mes</button>
-                <button type="button" data-preset="7dias">Últimos 7 días</button>
-                <button type="button" data-preset="30dias">Últimos 30 días</button>
+                <button type="button" data-preset="hoy" class="btn">Hoy</button>
+                <button type="button" data-preset="ayer" class="btn">Ayer</button>
+                <button type="button" data-preset="semana" class="btn">Esta semana</button>
+                <button type="button" data-preset="mes" class="btn">Este mes</button>
+                <button type="button" data-preset="7dias" class="btn">Últimos 7 días</button>
+                <button type="button" data-preset="30dias" class="btn">Últimos 30 días</button>
             </div>
 
             <form id="formFecha">
@@ -407,14 +372,83 @@ function obtenerTotalVenta(array $venta): string
             </form>
         </div>
     </div>
+    <div id="modalDetalles" class="modal hidden">
+        <div class="modal-content" style="max-width:600px">
+            <h2>Detalle de la venta</h2>
+
+            <p><b>Venta #:</b> <span id="detalleVentaId"></span></p>
+
+            <h3>Fecha de venta</h3>
+            <div id="detalleFecha"></div>
+
+            <h3>Cliente</h3>
+            <div id="detalleCliente"></div>
+
+            <h3>Productos</h3>
+            <div id="detalleProductos"></div>
+
+            <h3>Detalle de pago</h3>
+            <div id="detallePago"></div>
+
+            <div id="bloqueAbonos">
+                <h3>Abonos</h3>
+                <div id="detalleAbonos"></div>
+            </div>
+
+
+            <div style="margin-top:15px;text-align:right">
+                <button id="cerrarDetalles" class="btn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+    <div id="modalMetodo" class="modal hidden">
+        <div class="modal-content">
+            <h2>Método de pago</h2>
+
+            <form id="formMetodo">
+                <div class="metodos_sel">
+                    <label>
+                        <input type="checkbox" name="metodo[]" value="efectivo" data-label="efectivo" class="btn_f">
+                    </label>
+
+                    <label>
+                        <input type="checkbox" name="metodo[]" value="transferencia" data-label="transferencia" class="btn_f">
+                    </label>
+
+                    <label>
+                        <input type="checkbox" name="metodo[]" value="credito" data-label="credito" class="btn_f">
+                    </label>
+                </div>
+
+                <div style="margin-top:10px; display: flex; flex-direction: row; justify-content:space-around;">
+                    <button type="submit" class="btn">Aplicar</button>
+                    <button type="button" id="cancelarMetodo" class="btn">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalConfirmGuardar" class="modal hidden">
+        <div class="modal-content" style="max-width:400px">
+            <h3>Confirmar registro</h3>
+            <p>¿Desea guardar este abono?</p>
+
+            <div style="margin-top:15px; text-align:right">
+                <button id="btnConfirmGuardar" class="btn">Sí, guardar</button>
+                <button id="btnCancelGuardar" class="btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
 
     <div id="toast-container"></div>
     <script src="assets/js/menu.js"></script>
     <script>
         const modal = document.getElementById("modalAbono");
+        const modalConfirmGuardar = document.getElementById("modalConfirmGuardar");
         const form = document.getElementById("formAbono");
         const inputsMontos = document.getElementById("inputsMontos");
+
 
         const chkEfectivo = document.getElementById("chkEfectivo");
         const chkTransferencia = document.getElementById("chkTransferencia");
@@ -478,7 +512,9 @@ function obtenerTotalVenta(array $venta): string
         chkTransferencia.addEventListener("change", renderInputs);
     </script>
     <script>
-        form.addEventListener("submit", async e => {
+        let abonoDataTemp = null;
+
+        form.addEventListener("submit", e => {
             e.preventDefault();
 
             const saldo = parseInt(document.getElementById("abono_saldo").value);
@@ -507,22 +543,15 @@ function obtenerTotalVenta(array $venta): string
                 return;
             }
 
-            data.append("metodos", JSON.stringify(metodos));
-
-            const res = await fetch("controllers/guardar_abono.php", {
-                method: "POST",
-                body: data
-            });
-
-            const json = await res.json();
-
-            if (json.ok) {
-                toast("Abono registrado correctamente");
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                toast(json.error || "Error", "error");
+            const copia = new FormData();
+            for (const [k, v] of data.entries()) {
+                copia.append(k, v);
             }
 
+            copia.append("metodos", JSON.stringify(metodos));
+            abonoDataTemp = copia;
+
+            modalConfirmGuardar.classList.remove("hidden");
         });
     </script>
     <script>
@@ -560,9 +589,11 @@ function obtenerTotalVenta(array $venta): string
                 }
 
                 if (tipo === "metodo") {
-                    const val = f.querySelector("select")?.value;
-                    if (val) params.set("metodo", val);
+                    f.querySelectorAll("input[name='metodo[]']").forEach(chk => {
+                        params.append("metodo[]", chk.value);
+                    });
                 }
+
 
                 if (tipo === "fecha") {
                     const desde = f.querySelector("[name='desde']")?.value;
@@ -606,8 +637,7 @@ function obtenerTotalVenta(array $venta): string
             if (chkFecha.checked) {
                 filtrosActivos.innerHTML += `
         <div class="filtro-activo" data-filtro="fecha">
-            <span>Fecha</span>
-            <button type="button" id="select-fecha">Seleccionar rango</button>
+            <button type="button" id="select-fecha" class="btn">Seleccionar fecha</button>
             <button type="button" class="btn-remove">✕</button>
         </div>
     `;
@@ -616,8 +646,7 @@ function obtenerTotalVenta(array $venta): string
             if (chkCliente.checked) {
                 filtrosActivos.innerHTML += `
         <div class="filtro-activo" data-filtro="cliente">
-            <span>Cliente</span>
-            <input type="text" name="cliente">
+            <input type="text" name="cliente" placeholder="Cliente">
             <button type="button" class="btn-remove">✕</button>
         </div>
     `;
@@ -626,7 +655,6 @@ function obtenerTotalVenta(array $venta): string
             if (chkEstado.checked) {
                 filtrosActivos.innerHTML += `
         <div class="filtro-activo" data-filtro="estado">
-            <span>Estado</span>
             <select name="estado">
                 <option value="">Todos</option>
                 <option value="pago">Pago</option>
@@ -640,12 +668,14 @@ function obtenerTotalVenta(array $venta): string
             if (chkMetodo.checked) {
                 filtrosActivos.innerHTML += `
         <div class="filtro-activo" data-filtro="metodo">
-            <span>Método</span>
-            <button type="button">Seleccionar método</button>
+            <button type="button" id="select-metodo" class="btn">
+                Seleccionar método
+            </button>
             <button type="button" class="btn-remove">✕</button>
         </div>
     `;
             }
+
 
 
             modalFiltros.classList.add("hidden");
@@ -656,11 +686,9 @@ function obtenerTotalVenta(array $venta): string
 
             const contenedor = document.getElementById("filtrosActivos");
 
-            /* CLIENTE */
             if (filtrosPersistidos.cliente) {
                 contenedor.innerHTML += `
             <div class="filtro-activo" data-filtro="cliente">
-                <span>Cliente</span>
                 <input type="text" value="${filtrosPersistidos.cliente}">
                 <button type="button" class="btn-remove">✕</button>
             </div>
@@ -668,11 +696,9 @@ function obtenerTotalVenta(array $venta): string
                 chkCliente.checked = true;
             }
 
-            /* ESTADO */
             if (filtrosPersistidos.estado) {
                 contenedor.innerHTML += `
             <div class="filtro-activo" data-filtro="estado">
-                <span>Estado</span>
                 <select>
                     <option value="pago" ${filtrosPersistidos.estado === "pago" ? "selected" : ""}>Pago</option>
                     <option value="pendiente" ${filtrosPersistidos.estado === "pendiente" ? "selected" : ""}>Pendiente</option>
@@ -682,18 +708,40 @@ function obtenerTotalVenta(array $venta): string
         `;
                 chkEstado.checked = true;
             }
-            /* FECHA */
             if (filtrosPersistidos.desde && filtrosPersistidos.hasta) {
                 filtrosActivos.innerHTML += `
         <div class="filtro-activo" data-filtro="fecha">
             <input type="hidden" name="desde" value="${filtrosPersistidos.desde}">
             <input type="hidden" name="hasta" value="${filtrosPersistidos.hasta}">
 
-            <button type="button" id="select-fecha">Cambiar</button>
+            <button type="button" id="select-fecha" class="btn">Cambiar</button>
             <button type="button" class="btn-remove">✕</button>
         </div>
     `;
                 chkFecha.checked = true;
+            }
+
+            if (filtrosPersistidos.metodo) {
+
+                const metodos = Array.isArray(filtrosPersistidos.metodo) ?
+                    filtrosPersistidos.metodo : [filtrosPersistidos.metodo];
+
+                filtrosActivos.innerHTML += `
+        <div class="filtro-activo" data-filtro="metodo">
+
+            ${metodos.map(m =>
+                `<input type="hidden" name="metodo[]" value="${m}">`
+            ).join("")}
+
+            <button type="button" id="select-metodo" class="btn">
+                ${metodos.join(", ")}
+            </button>
+
+            <button type="button" class="btn-remove">✕</button>
+        </div>
+    `;
+
+                chkMetodo.checked = true;
             }
 
 
@@ -758,21 +806,16 @@ function obtenerTotalVenta(array $venta): string
             const filtroFecha = document.querySelector(".filtro-activo[data-filtro='fecha']");
 
             filtroFecha.innerHTML = `
-        <span>Fecha</span>
 
         <input type="hidden" name="desde" value="${desde}">
         <input type="hidden" name="hasta" value="${hasta}">
 
-        <span class="rango-fecha">
-            ${desde.replace("T"," ")} → ${hasta.replace("T"," ")}
-        </span>
 
-        <button type="button" id="select-fecha">Cambiar</button>
+        <button type="button" id="select-fecha" class="btn">Cambiar</button>
         <button type="button" class="btn-remove">✕</button>
     `;
 
             modalFecha.classList.add("hidden");
-            aplicarFiltros();
         });
     </script>
     <script>
@@ -846,8 +889,153 @@ function obtenerTotalVenta(array $venta): string
             });
         });
     </script>
+    <script>
+        const modalDetalles = document.getElementById("modalDetalles");
+        const detalleProductos = document.getElementById("detalleProductos");
+        const detallePago = document.getElementById("detallePago");
+        const detalleAbonos = document.getElementById("detalleAbonos");
 
 
+        document.querySelectorAll(".btn-detalles").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const ventaId = btn.dataset.id;
+                document.getElementById("detalleVentaId").textContent = ventaId;
+
+                const ventaDate = btn.dataset.fecha;
+                document.getElementById("detalleFecha").textContent = ventaDate;
+
+                const ventaCliente = btn.dataset.cliente;
+                document.getElementById("detalleCliente").textContent = ventaCliente;
+
+                const productos = JSON.parse(btn.dataset.productos || "[]");
+                detalleProductos.innerHTML = productos.length ?
+                    productos.map(p => `• ${p.nombre} x${p.cantidad}`).join("<br>") :
+                    "—";
+
+                detallePago.innerHTML = btn.dataset.detalle || "—";
+
+                const bloqueAbonos = document.getElementById("bloqueAbonos");
+
+                const abonos = JSON.parse(btn.dataset.abonos || "[]");
+
+                if (!abonos.length) {
+                    bloqueAbonos.style.display = "none";
+                } else {
+                    bloqueAbonos.style.display = "block";
+
+                    detalleAbonos.innerHTML = abonos.map(a => {
+                        const pagos = JSON.parse(a.tipo_pago).detalles || {};
+                        let html = `<b>${a.fecha_abono}</b><ul>`;
+
+                        for (const metodo in pagos) {
+                            html += `<li>${metodo}: $${Number(pagos[metodo]).toLocaleString()}</li>`;
+                        }
+
+                        html += "</ul>";
+                        return html;
+                    }).join("");
+                }
+
+
+                modalDetalles.classList.remove("hidden");
+            });
+        });
+
+        document.getElementById("cerrarDetalles").addEventListener("click", () => {
+            modalDetalles.classList.add("hidden");
+        });
+
+        modalDetalles.addEventListener("click", e => {
+            if (e.target === modalDetalles) {
+                modalDetalles.classList.add("hidden");
+            }
+        });
+    </script>
+    <script>
+        const modalMetodo = document.getElementById("modalMetodo");
+
+        document.addEventListener("click", e => {
+            if (e.target.id === "select-metodo") {
+                modalMetodo.classList.remove("hidden");
+            }
+        });
+
+        document.getElementById("cancelarMetodo").addEventListener("click", () => {
+            modalMetodo.classList.add("hidden");
+        });
+
+        modalMetodo.addEventListener("click", e => {
+            if (e.target === modalMetodo) {
+                modalMetodo.classList.add("hidden");
+            }
+        });
+    </script>
+    <script>
+        document.getElementById("formMetodo").addEventListener("submit", e => {
+            e.preventDefault();
+
+            const checks = e.target.querySelectorAll(
+                "input[name='metodo[]']:checked"
+            );
+
+            if (!checks.length) return;
+
+            const valores = [...checks].map(c => c.value);
+
+            const filtroMetodo = document.querySelector(
+                ".filtro-activo[data-filtro='metodo']"
+            );
+
+            filtroMetodo.innerHTML = `
+
+            ${valores.map(v =>
+                `<input type="hidden" name="metodo[]" value="${v}">`
+            ).join("")}
+
+            <button type="button" id="select-metodo" class="btn">
+                ${valores.join(", ")}
+            </button>
+
+            <button type="button" class="btn-remove">✕</button>
+        `;
+
+            modalMetodo.classList.add("hidden");
+        });
+    </script>
+    <script>
+        document.getElementById("btnCancelGuardar").addEventListener("click", () => {
+            modalConfirmGuardar.classList.add("hidden");
+        });
+
+        modalConfirmGuardar.addEventListener("click", e => {
+            if (e.target === modalConfirmGuardar) {
+                modalConfirmGuardar.classList.add("hidden");
+            }
+        });
+
+        document.getElementById("btnConfirmGuardar").addEventListener("click", async () => {
+            if (!abonoDataTemp) return;
+
+            const res = await fetch("controllers/guardar_abono.php", {
+                method: "POST",
+                body: abonoDataTemp
+            });
+
+            const json = await res.json();
+
+            modalConfirmGuardar.classList.add("hidden");
+            modal.classList.add("hidden");
+
+            if (json.ok) {
+                toast("Abono registrado correctamente");
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                toast(json.error || "Error", "error");
+            }
+
+            abonoDataTemp = null;
+        });
+    </script>
 
 </body>
 

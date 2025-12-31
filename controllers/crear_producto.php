@@ -1,34 +1,58 @@
 <?php
+header("Content-Type: application/json");
+
 include "../config/db.php";
+include "session.php";
 $conn = connect();
 
-if ($_POST["agregar"]) {
-    try {
-        $stmt = $conn->prepare("INSERT INTO productos(codigo, nombre, categoria, tipo_de_producto, costo, venta, cantidad, cantidad_minima) VALUES(?,?,?,?,?,?,?,?)");
-        $stmt->bindparam(1, $codigo);
-        $stmt->bindparam(2, $nombre);
-        $stmt->bindparam(3, $categoria);
-        $stmt->bindparam(4, $tipo_de_producto);
-        $stmt->bindparam(5, $costo);
-        $stmt->bindparam(6, $venta);
-        $stmt->bindparam(7, $cantidad);
-        $stmt->bindparam(8, $cantidad_minima);
+if (!isset($_POST["codigo"])) {
+    echo json_encode(["status" => "error", "msg" => "Datos incompletos"]);
+    exit;
+}
 
-        $codigo = $_POST["codigo"];
-        $nombre = $_POST["nombre"];
-        $categoria = $_POST["categoria"];
-        $tipo_de_producto = $_POST["tipo_producto"];
-        $costo = $_POST["costo"];
-        $venta = $_POST["venta"];
-        $cantidad = $_POST["cantidad"];
-        $cantidad_minima = $_POST["min_cant"];
+try {
+    $stmt = $conn->prepare(
+        "INSERT INTO productos
+        (codigo, nombre, categoria, tipo_de_producto, costo, venta, cantidad, cantidad_minima)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    );
 
-        $result = $stmt->execute();
+    $stmt->execute([
+        $_POST["codigo"],
+        $_POST["nombre"],
+        $_POST["categoria"],
+        $_POST["tipo_producto"],
+        $_POST["costo"],
+        $_POST["venta"],
+        $_POST["cantidad"],
+        $_POST["min_cant"]
+    ]);
 
-        if ($result) {
-            header("Location: ../agregar");
+    if ($stmt) {
+        $stmt_agg = $conn->prepare("SELECT id_producto FROM productos WHERE codigo=?");
+        $stmt_agg->execute([$_POST["codigo"]]);
+        $res = $stmt_agg->fetch(PDO::FETCH_ASSOC);
+        $stmt_com = $conn->prepare("INSERT INTO compras(id_producto, cantidad, ingreso) VALUES(?, ?, ?)");
+        if ($stmt_com->execute([$res["id_producto"], $_POST["cantidad"], $_SESSION["nombre"]])) {
+            echo json_encode(["status" => "success"]);
         }
-    } catch (PDOException $e) {
-        header("Location: ../agregar?e=pro_dup");
+        
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "msg" => "Error al guardar producto"
+        ]);
+    }
+} catch (PDOException $e) {
+    if ($e->getCode() == 23000) {
+        echo json_encode([
+            "status" => "error",
+            "msg" => "El código del producto ya existe"
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "msg" => "Error al guardar producto"
+        ]);
     }
 }

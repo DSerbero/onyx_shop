@@ -14,11 +14,18 @@ include "../../controllers/getSession.php";
                 <li><a href="venta">Crear venta</a></li>
                 <li><a href="productos">Ver productos</a></li>
                 <li><a href="agregar">Ingresar productos</a></li>
+                <li><a href="cambios">Registro de compras</a></li>
                 <li><a href="clientes">Ver clientes</a></li>
                 <li><a href="reportes">Cuadre de caja</a></li>
                 <li><a href="historial">Historial de ventas</a></li>
                 <li><a href="cerrar">Cerrar Sesion</a></li>
-
+                <?php
+                if ($_SESSION["cargo"] === "code") {
+                ?>
+                <li><a href="usuarios">Configurar usuarios</a></li>
+                <?php
+                }
+                ?>
             </ul>
         </div>
         <div id="overlay" class="overlay"></div>
@@ -28,7 +35,7 @@ include "../../controllers/getSession.php";
     </div>
     <div class="header_s3">
         <img src="assets/img/perfil.ico" alt="">
-        <span><?php echo $_SESSION["nombre"];?></span>
-        <span><?php echo getSession();?></span>
+        <span><?php echo $_SESSION["nombre"]; ?></span>
+        <span><?php echo getSession(); ?></span>
     </div>
 </header>

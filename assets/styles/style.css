@@ -6,6 +6,10 @@
     --deg_btn2: #aedcf3;
     --deg_btn_h1: #b3d6f2;
     --deg_btn_h2: #98bcd9;
+    --bgtab: #e5f4ff;
+    --th_tab: #99acff;
+    --td_tab1: #cdd6ff;
+    --td_tab2: #e3e8ff;
 }
 
 * {
@@ -269,7 +273,7 @@ h2.subtitle_log {
         transition: all 0.5s ease-in-out;
     }
 
-    
+
     .form.res {
         height: 60vh;
     }
@@ -302,8 +306,56 @@ h2.subtitle_log {
         transition: all 0.5s ease-in-out;
     }
 
-    
+
     .form.res {
         height: 550px;
     }
+}
+
+/* ================= MODAL ALERT (LOGIN) ================= */
+
+.modal_cliente {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal_contenido {
+    background: var(--bgtab);
+    padding: 20px;
+    width: 360px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal_contenido p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+/* Botón OK del modal */
+#alert_aceptar {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(160deg,
+            var(--deg_btn2) 5%,
+            var(--deg_btn1));
+}
+
+#alert_aceptar:hover {
+    background: linear-gradient(160deg,
+            var(--deg_btn_h1) 5%,
+            var(--deg_btn_h2));
 }

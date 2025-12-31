@@ -105,7 +105,10 @@ ob_start();
             </tr>
         </thead>
         <tbody>
-
+            <?php
+            $total = 0;
+            $total_pen = 0;
+            ?>
             <?php foreach ($ventas as $v):
 
                 $venta = json_decode($v["tipo_pago"], true) ?? [];
@@ -135,9 +138,18 @@ ob_start();
                     <td><?= $productosTexto ?></td>
                     <td><?= ucfirst($venta["detalles"]["tipo"] ?? "—") ?></td>
                     <td class="right">$<?= number_format($venta["detalles"]["total"] ?? 0, 0, ',', '.') ?></td>
+                    <?php 
+                    $total = $total + $venta["detalles"]["total"];
+                    $total_pen = $total_pen + $saldoPendiente;
+                    ?>
                     <td class="right">$<?= number_format($saldoPendiente, 0, ',', '.') ?></td>
                 </tr>
             <?php endforeach; ?>
+            <tr>
+                <td colspan="5" >Total:</td>
+                <td class="right">$<?= number_format($total, 0,',', '.') ?></td>
+                <td class="right">$<?= number_format($total_pen, 0,',', '.') ?></td>
+            </tr>
 
         </tbody>
     </table>

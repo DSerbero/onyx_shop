@@ -3,6 +3,8 @@ include "../../config/db.php";
 
 $conn = connect();
 
+
+
 /* =======================
    OBTENER VENTAS
 ======================= */
@@ -18,16 +20,22 @@ if (!empty($_GET["cliente"])) {
 }
 
 /* ESTADO */
-if (!empty($_GET["estado"])) {
-    $sql .= " AND estado = ?";
-    $params[] = $_GET["estado"];
+/* MÉTODO DE PAGO (múltiples) */
+/* MÉTODO DE PAGO (múltiples checkboxes) */
+/* MÉTODO DE PAGO (checkbox múltiple) */
+if (!empty($_GET["metodo"]) && is_array($_GET["metodo"])) {
+
+    $condiciones = [];
+
+    foreach ($_GET["metodo"] as $metodo) {
+        $condiciones[] = "tipo_pago LIKE ?";
+        $params[] = '%"' . $metodo . '"%';
+    }
+
+    $sql .= " AND (" . implode(" OR ", $condiciones) . ")";
 }
 
-/* MÉTODO DE PAGO */
-if (!empty($_GET["metodo"])) {
-    $sql .= " AND tipo_pago LIKE ?";
-    $params[] = '%"' . $_GET["metodo"] . '"%';
-}
+
 
 /* FECHA */
 if (!empty($_GET["desde"]) && !empty($_GET["hasta"])) {

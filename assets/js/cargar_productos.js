@@ -57,31 +57,37 @@ function agregarProducto(prod) {
     }
 
     const fila = document.createElement("tr");
-    fila.innerHTML = `
+    if (prod.cantidad > 0) {
+        fila.innerHTML = `
         <td class="code"><input type="text" value="${prod.codigo}" readonly></td>
         <td><input type="text" value="${prod.nombre}" readonly></td>
-        <td><input type="number" min="1" value="1" class="cantidad"></td>
+        <td><input type="number" min="1" value="1" class="cantidad" max="${prod.cantidad}"></td>
         <td><input type="text" value="${formatoMoneda.format(prod.venta)}" class="total" readonly></td>
         <td><a href="#" class="eliminar"><img src="assets/img/delete.png"></a></td>
     `;
-    tabla.appendChild(fila);
+        tabla.appendChild(fila);
 
-    const inputCantidad = fila.querySelector(".cantidad");
-    const inputTotal = fila.querySelector(".total");
+        const inputCantidad = fila.querySelector(".cantidad");
+        const inputTotal = fila.querySelector(".total");
 
-    inputCantidad.addEventListener("input", () => {
-        const cantidad = parseFloat(inputCantidad.value) || 0;
-        inputTotal.value = formatoMoneda.format((cantidad * prod.venta));
+        inputCantidad.addEventListener("input", () => {
+            const cantidad = parseFloat(inputCantidad.value) || 0;
+            inputTotal.value = formatoMoneda.format((cantidad * prod.venta));
+            actualizarTotal();
+        });
+
+        fila.querySelector(".eliminar").addEventListener("click", e => {
+            e.preventDefault();
+            fila.remove();
+            actualizarTotal();
+        });
+
         actualizarTotal();
-    });
+    } else {
+        modalAlert("El producto se encuentra agotado.");
+        return;
+    }
 
-    fila.querySelector(".eliminar").addEventListener("click", e => {
-        e.preventDefault();
-        fila.remove();
-        actualizarTotal();
-    });
-
-    actualizarTotal();
 }
 
 inputBuscar.addEventListener("keyup", () => {
@@ -91,14 +97,16 @@ inputBuscar.addEventListener("keyup", () => {
     if (!texto) return;
 
     const filtrados = productos.filter(p =>
-        p.nombre.toLowerCase().includes(texto)
+        p.nombre.toLowerCase().includes(texto) || p.codigo.includes(texto)
     );
 
     filtrados.forEach(prod => {
         const item = document.createElement("div");
-        item.textContent = prod.nombre;
+        item.textContent = prod.codigo + " - " + prod.nombre;
         item.classList.add("item_busqueda");
-
+        if (prod.cantidad == 0) {
+            item.classList.add("sin_stock");
+        }
         item.addEventListener("click", () => {
             agregarProducto(prod);
             listaBusqueda.innerHTML = "";
@@ -128,35 +136,35 @@ inputCliente.addEventListener("keyup", () => {
         item.textContent = `${cli.nombre} - ${cli.documento}`;
 
         item.addEventListener("click", () => {
-            clienteSeleccionado = { ...cli };
-            window.clienteSeleccionado = clienteSeleccionado;
+            window.clienteOriginal = { ...cli };   // respaldo
+            window.clienteEditado = { ...cli };   // copia editable
 
-            inputCliente.value = clienteSeleccionado.nombre;
+            inputCliente.value = window.clienteEditado.nombre;
             listaClientes.innerHTML = "";
 
-            document.getElementById("cliente_info").value = JSON.stringify(clienteSeleccionado);
+            document.getElementById("id_cliente").value = window.clienteEditado.id_cliente;
+            document.getElementById("cliente_info").value =
+                JSON.stringify(window.clienteEditado);
 
-            document.getElementById("id_cliente").value = clienteSeleccionado.id_cliente;
-
-
-            document.getElementById("modal_nombre").value = clienteSeleccionado.nombre || "";
-            document.getElementById("modal_documento").value = clienteSeleccionado.documento || "";
-            document.getElementById("modal_direccion").value = clienteSeleccionado.direccion || "";
-            document.getElementById("modal_telefono").value = clienteSeleccionado.telefono || "";
-            document.getElementById("modal_correo").value = clienteSeleccionado.correo || "";
-            document.getElementById("modal_ref1").value = clienteSeleccionado.referencia1 || "";
-            document.getElementById("modal_ref2").value = clienteSeleccionado.referencia2 || "";
-
+            document.getElementById("modal_nombre").value = window.clienteEditado.nombre || "";
+            document.getElementById("modal_documento").value = window.clienteEditado.documento || "";
+            document.getElementById("modal_direccion").value = window.clienteEditado.direccion || "";
+            document.getElementById("modal_telefono").value = window.clienteEditado.telefono || "";
+            document.getElementById("modal_correo").value = window.clienteEditado.correo || "";
+            document.getElementById("modal_ref1").value = window.clienteEditado.referencia1 || "";
+            document.getElementById("modal_ref2").value = window.clienteEditado.referencia2 || "";
 
             document.getElementById("modal_cliente").style.display = "flex";
         });
+
 
         listaClientes.appendChild(item);
     });
 });
 
 /* ------------- SUBMIT FORM ------------- */
-form.addEventListener("submit", e => {
+form.addEventListener("submit", async e => {
+
     const filasProductos = Array.from(tabla.querySelectorAll("tr")).slice(1);
 
 
@@ -164,14 +172,17 @@ form.addEventListener("submit", e => {
 
     if (productosAgregados.length === 0) {
         e.preventDefault();
-        alert("Debe agregar al menos un producto.");
+        modalAlert("Debe agregar al menos un producto.");
+
+
         return;
     }
 
     const infoCliente = document.getElementById("cliente_info").value;
     if (!infoCliente || infoCliente.trim() === "") {
         e.preventDefault();
-        alert("Debe seleccionar un cliente o agregar uno nuevo.");
+        await modalAlert("Debe seleccionar un cliente o agregar uno nuevo.");
+
         return;
     }
     let datosCliente = {};
@@ -179,20 +190,23 @@ form.addEventListener("submit", e => {
         datosCliente = JSON.parse(infoCliente);
     } catch (err) {
         e.preventDefault();
-        alert("Información de cliente inválida.");
+        await modalAlert("Información de cliente inválida.");
+
         return;
     }
 
 
     if (!efectivo.checked && !transferencia.checked && !credito.checked) {
         e.preventDefault();
-        alert("Debe seleccionar al menos un método de pago.");
+        await modalAlert("Debe seleccionar al menos un método de pago.");
+
         return;
     }
 
     if (credito.checked && !efectivo.checked && !transferencia.checked) {
         e.preventDefault();
-        alert("El crédito debe ir acompañado de efectivo, transferencia o ambos.");
+        await modalAlert("El crédito debe ir acompañado de efectivo, transferencia o ambos.");
+
         return;
     }
 
@@ -279,53 +293,55 @@ form.addEventListener("submit", e => {
     }
 
     // 7) ENVIAR A PHP
+    e.preventDefault();
+
+    let confirmacion = await modalConfirm("¿Desea realizar la venta?");
+    if (!confirmacion) return;
+
+    // Guardar info del pago
     document.getElementById("pago_info").value = JSON.stringify(pago);
+
+    // Enviar formulario
+    form.submit();
+
 
 });
 
 
 document.getElementById("modal_nombre").addEventListener("input", e => {
-    if (window.clienteSeleccionado) {
-        window.clienteSeleccionado.nombre = e.target.value;
-        inputCliente.value = window.clienteSeleccionado.nombre;
-        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
-    }
+    if (!window.clienteEditado) return;
+
+    window.clienteEditado.nombre = e.target.value;
+    inputCliente.value = e.target.value; // feedback visual
 });
+
 document.getElementById("modal_documento").addEventListener("input", e => {
-    if (window.clienteSeleccionado) {
-        window.clienteSeleccionado.documento = e.target.value;
-        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
-    }
+    if (!window.clienteEditado) return;
+    window.clienteEditado.documento = e.target.value;
 });
+
 document.getElementById("modal_direccion").addEventListener("input", e => {
-    if (window.clienteSeleccionado) {
-        window.clienteSeleccionado.direccion = e.target.value;
-        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
-    }
+    if (!window.clienteEditado) return;
+    window.clienteEditado.direccion = e.target.value;
 });
+
 document.getElementById("modal_telefono").addEventListener("input", e => {
-    if (window.clienteSeleccionado) {
-        window.clienteSeleccionado.telefono = e.target.value;
-        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
-    }
+    if (!window.clienteEditado) return;
+    window.clienteEditado.telefono = e.target.value;
 });
+
 document.getElementById("modal_correo").addEventListener("input", e => {
-    if (window.clienteSeleccionado) {
-        window.clienteSeleccionado.correo = e.target.value;
-        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
-    }
+    if (!window.clienteEditado) return;
+    window.clienteEditado.correo = e.target.value;
 });
 
 document.getElementById("modal_ref1").addEventListener("input", e => {
-    if (window.clienteSeleccionado) {
-        window.clienteSeleccionado.referencia1 = e.target.value;
-        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
-    }
+    if (!window.clienteEditado) return;
+    window.clienteEditado.referencia1 = e.target.value;
 });
 
 document.getElementById("modal_ref2").addEventListener("input", e => {
-    if (window.clienteSeleccionado) {
-        window.clienteSeleccionado.referencia2 = e.target.value;
-        document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
-    }
+    if (!window.clienteEditado) return;
+    window.clienteEditado.referencia2 = e.target.value;
 });
+

@@ -5,7 +5,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
 ?>
 
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="es">
 
     <head>
         <meta charset="UTF-8">
@@ -14,6 +14,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
         <link rel="stylesheet" href="assets/styles/gen_style.css">
         <link rel="stylesheet" href="assets/styles/add_style.css">
         <link rel="stylesheet" href="assets/styles/header_style.css">
+        <link rel="icon" href="assets/img/width_800.ico">
     </head>
 
     <body>
@@ -23,7 +24,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
         <div class="titulo">
         </div>
         <section>
-            <form action="controllers/crear_producto.php" method="post" autocomplete="off">
+            <form autocomplete="off" id="formProducto" method="post">
                 <table>
                     <tr>
                         <th colspan="2">
@@ -100,6 +101,46 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                 <input type="submit" value="Crear producto" name="agregar">
             </form>
         </section>
+        <div id="toast-container"></div>
+
+        <script>
+            function toast(message, type = "info") {
+                const container = document.getElementById("toast-container");
+
+                const t = document.createElement("div");
+                t.className = `toast ${type}`;
+                t.textContent = message;
+
+                container.appendChild(t);
+
+                setTimeout(() => t.remove(), 3500);
+            }
+        </script>
+        <script>
+            const form = document.getElementById("formProducto");
+
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+
+                fetch("controllers/crear_producto.php", {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === "success") {
+                            toast("Producto creado correctamente", "success");
+                            form.reset();
+                        } else {
+                            toast(data.msg || "Error al crear producto", "error");
+                        }
+                    })
+                    .catch(() => toast("Error de conexión", "error"));
+            });
+        </script>
+
         <script src="assets/js/menu.js"></script>
 
     </body>
@@ -109,7 +150,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
 <?php
 
 } else {
-    header("Location: login");
+    header("Location: cerrar");
 }
 
 ?>

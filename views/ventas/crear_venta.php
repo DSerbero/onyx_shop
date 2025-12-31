@@ -7,7 +7,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
 
 ?>
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="es">
 
     <head>
         <meta charset="UTF-8">
@@ -16,6 +16,7 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
         <link rel="stylesheet" href="assets/styles/gen_style.css">
         <link rel="stylesheet" href="assets/styles/venta_style.css">
         <link rel="stylesheet" href="assets/styles/header_style.css">
+        <link rel="icon" href="assets/img/width_800.ico">
     </head>
 
     <body>
@@ -75,7 +76,6 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                 </div>
             </form>
 
-            <!-- Modal editar/mostrar cliente existente -->
             <div id="modal_cliente" class="modal_cliente" style="display:none;">
                 <div class="modal_contenido">
                     <table>
@@ -106,11 +106,11 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                         </tr>
                         <tr>
                             <th><label>Referencia 1:</label></th>
-                            <td><input type="text" id="modal_ref1"></td>
+                            <td><textarea id="modal_ref1" rows="3"></textarea></td>
                         </tr>
                         <tr>
                             <th><label>Referencia 2:</label></th>
-                            <td><input type="text" id="modal_ref2"></td>
+                            <td><textarea id="modal_ref2" rows="3"></textarea></td>
                         </tr>
 
                     </table>
@@ -167,12 +167,20 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                                 <td><input type="text" id="tel_nuevo_ref1"></td>
                             </tr>
                             <tr>
+                                <th><label>Dirección:</label></th>
+                                <td><input type="text" id="dir_nuevo_ref1"></td>
+                            </tr>
+                            <tr>
                                 <th><label>Nombre:</label></th>
                                 <td><input type="text" id="nom_nuevo_ref2"></td>
                             </tr>
                             <tr>
                                 <th><label>Teléfono:</label></th>
                                 <td><input type="text" id="tel_nuevo_ref2"></td>
+                            </tr>
+                            <tr>
+                                <th><label>Dirección:</label></th>
+                                <td><input type="text" id="dir_nuevo_ref2"></td>
                             </tr>
                         </table>
                     </div>
@@ -184,6 +192,25 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
             </div>
 
         </section>
+        <div id="modal_confirm" class="modal_cliente" style="display:none;">
+            <div class="modal_contenido">
+                <p id="modal_confirm_text"></p>
+
+                <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" id="confirm_cancelar" class="btn_mo">Cancelar</button>
+                    <button type="button" id="confirm_aceptar" class="btn_mo">Aceptar</button>
+                </div>
+            </div>
+        </div>
+        <div id="modal_alert" class="modal_cliente" style="display:none;">
+            <div class="modal_contenido">
+                <p id="modal_alert_text"></p>
+
+                <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+                    <button type="button" id="alert_aceptar" class="btn_mo">Aceptar</button>
+                </div>
+            </div>
+        </div>
 
         <script src="assets/js/tipo_venta.js"></script>
         <script>
@@ -211,11 +238,13 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
                 const correo = document.getElementById("nuevo_correo").value.trim();
                 const ref1Nombre = document.getElementById("nom_nuevo_ref1").value.trim();
                 const ref1Telefono = document.getElementById("tel_nuevo_ref1").value.trim();
+                const ref1Direccion = document.getElementById("dir_nuevo_ref1").value.trim();
                 const ref2Nombre = document.getElementById("nom_nuevo_ref2").value.trim();
                 const ref2Telefono = document.getElementById("tel_nuevo_ref2").value.trim();
+                const ref2Direccion = document.getElementById("dir_nuevo_ref2").value.trim();
 
-                const referencia1 = `${ref1Nombre} - ${ref1Telefono}`.trim();
-                const referencia2 = `${ref2Nombre} - ${ref2Telefono}`.trim();
+                const referencia1 = `${ref1Nombre} - ${ref1Telefono} - ${ref1Direccion}`.trim();
+                const referencia2 = `${ref2Nombre} - ${ref2Telefono} - ${ref2Direccion}`.trim();
 
 
                 const clienteNuevo = {
@@ -234,14 +263,87 @@ if ($_SESSION["cargo"] === "gerente" || $_SESSION["cargo"] === "admin" || $_SESS
             });
 
 
-            document.getElementById("cerrar_modal").addEventListener("click", () => {
-                confirm("Deseas guardar los cambios?");
-                if (window.clienteSeleccionado) {
-                    document.getElementById("cliente_info").value = JSON.stringify(window.clienteSeleccionado);
+            document.getElementById("cerrar_modal").addEventListener("click", async () => {
+                const guardar = await modalConfirm("¿Deseas guardar los cambios?");
+
+                if (guardar) {
+                    window.clienteSeleccionado = {
+                        ...window.clienteEditado
+                    };
+                    inputCliente.value = window.clienteSeleccionado.nombre;
+                    document.getElementById("cliente_info").value =
+                        JSON.stringify(window.clienteSeleccionado);
                 }
+
                 document.getElementById("modal_cliente").style.display = "none";
-            });
+            });;
         </script>
+        <script>
+            function modalConfirm(mensaje) {
+                return new Promise(resolve => {
+                    const modal = document.getElementById("modal_confirm");
+                    const texto = document.getElementById("modal_confirm_text");
+                    const btnOk = document.getElementById("confirm_aceptar");
+                    const btnCancel = document.getElementById("confirm_cancelar");
+
+                    texto.textContent = mensaje;
+                    modal.style.display = "flex";
+
+                    const limpiar = () => {
+                        modal.style.display = "none";
+                        btnOk.onclick = null;
+                        btnCancel.onclick = null;
+                    };
+
+                    btnOk.onclick = () => {
+                        limpiar();
+                        resolve(true);
+                    };
+
+                    btnCancel.onclick = () => {
+                        limpiar();
+                        resolve(false);
+                    };
+                });
+            }
+        </script>
+        <script>
+            function modalAlert(mensaje) {
+                return new Promise(resolve => {
+                    const modal = document.getElementById("modal_alert");
+                    const texto = document.getElementById("modal_alert_text");
+                    const btn = document.getElementById("alert_aceptar");
+
+                    texto.textContent = mensaje;
+                    modal.style.display = "flex";
+
+                    btn.onclick = () => {
+                        modal.style.display = "none";
+                        btn.onclick = null;
+                        resolve();
+                    };
+                });
+            }
+        </script>
+        <?php
+        if (isset($_SESSION["venta_error"])) {
+            if ($_SESSION["venta_error"] === "reg") {
+        ?>
+                <script>
+                    modalAlert("El cliente ya se encuentra registrado o se encuentra inactivo.");
+                </script>
+            <?php
+            } else {
+            ?>
+                <script>
+                    modalAlert("Error al realizar la compra.");
+                </script>
+        <?php
+            }
+            unset($_SESSION["venta_error"]);
+        }
+        ?>
+
     </body>
 
     </html>
